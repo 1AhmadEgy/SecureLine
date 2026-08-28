@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/core_black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="@color/core_grey_10"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:background="@android:color/transparent"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح رمز QR"
+            android:textColor="@color/core_white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="12dp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/qr_camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/qr_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="وجه الكاميرا نحو رمز QR الخاص بجهة الاتصال"
+        android:textColor="@color/core_grey_50"
+        android:textSize="14sp"
+        android:padding="16dp"
+        android:gravity="center" />
+
+</LinearLayout>

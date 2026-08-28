@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/core_black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="إنشاء حساب جديد"
+            android:textColor="@color/core_white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="أنشئ هويتك الرقمية المجهولة"
+            android:textColor="@color/core_grey_50"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
+
+        <EditText
+            android:id="@+id/input_display_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="الاسم المعروض (اختياري)"
+            android:textColor="@color/core_white"
+            android:textColorHint="@color/core_grey_50"
+            android:background="@drawable/bg_input"
+            android:padding="16dp"
+            android:layout_marginTop="24dp"
+            android:inputType="textPersonName"
+            android:maxLength="50" />
+
+        <EditText
+            android:id="@+id/input_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="اسم المستخدم"
+            android:textColor="@color/core_white"
+            android:textColorHint="@color/core_grey_50"
+            android:background="@drawable/bg_input"
+            android:padding="16dp"
+            android:layout_marginTop="12dp"
+            android:inputType="text"
+            android:maxLength="30" />
+
+        <EditText
+            android:id="@+id/input_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="كلمة المرور (8 أحرف على الأقل)"
+            android:textColor="@color/core_white"
+            android:textColorHint="@color/core_grey_50"
+            android:background="@drawable/bg_input"
+            android:padding="16dp"
+            android:layout_marginTop="12dp"
+            android:inputType="textPassword"
+            android:minLength="8" />
+
+        <EditText
+            android:id="@+id/input_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="تأكيد كلمة المرور"
+            android:textColor="@color/core_white"
+            android:textColorHint="@color/core_grey_50"
+            android:background="@drawable/bg_input"
+            android:padding="16dp"
+            android:layout_marginTop="12dp"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_create_account"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:text="إنشاء الحساب"
+            android:textColor="@color/core_black"
+            android:background="@drawable/bg_button_primary"
+            android:layout_marginTop="24dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_back_to_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="لديك حساب بالفعل؟ تسجيل الدخول"
+            android:textColor="@color/core_ultramarine"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"
+            android:padding="8dp" />
+
+    </LinearLayout>
+</ScrollView>

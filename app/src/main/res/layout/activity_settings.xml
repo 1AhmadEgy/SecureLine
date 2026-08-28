@@ -1,64 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/core_black"
-    android:padding="16dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Security Settings"
-        android:textColor="@color/core_white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:paddingBottom="16dp" />
+    android:background="@color/core_black">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:background="@color/core_grey_10">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Tor Network"
-            android:textColor="@color/core_white"
-            android:textSize="16sp" />
-
-        <Switch
-            android:id="@+id/tor_switch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="12dp"
-        android:background="@color/core_grey_20"
-        android:layout_marginTop="8dp">
+            android:layout_height="wrap_content"
+            android:text="الإعدادات"
+            android:textColor="@color/core_white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Encrypt Database"
-            android:textColor="@color/core_white"
-            android:textSize="16sp" />
-
-        <Switch
-            android:id="@+id/encrypt_db_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true" />
+            android:text="الأمان والخصوصية"
+            android:textColor="@color/core_ultramarine"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@color/core_grey_10"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="وضع الخفاء الكامل (Tor)"
+                android:textColor="@color/core_white"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_tor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@color/core_grey_20"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="تشفير قاعدة البيانات"
+                android:textColor="@color/core_white"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_encrypt_db"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@color/core_grey_10"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="قفل التطبيق بالبصمة"
+                android:textColor="@color/core_white"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_biometric"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@color/core_grey_20"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="منع لقطات الشاشة"
+                android:textColor="@color/core_white"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_screenshot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="المكالمات"
+            android:textColor="@color/core_ultramarine"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@color/core_grey_10">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="جودة المكالمات"
+                android:textColor="@color/core_white"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/radio_call_quality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radio_high_quality"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="جودة عالية (32 كيلوبت)"
+                    android:textColor="@color/core_white"
+                    android:buttonTint="@color/core_ultramarine" />
+
+                <RadioButton
+                    android:id="@+id/radio_data_saver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="توفير البيانات (16 كيلوبت)"
+                    android:textColor="@color/core_white"
+                    android:buttonTint="@color/core_ultramarine"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/radio_extreme_saver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="توفير أقصى (8 كيلوبت)"
+                    android:textColor="@color/core_white"
+                    android:buttonTint="@color/core_ultramarine" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:text="تسجيل الخروج"
+            android:textColor="@color/core_white"
+            android:background="@drawable/bg_button_secondary"
+            android:layout_marginTop="32dp" />
+
+        <Button
+            android:id="@+id/btn_wipe_data"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:text="حذف جميع البيانات"
+            android:textColor="@color/core_red"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

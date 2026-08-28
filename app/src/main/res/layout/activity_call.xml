@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/core_black"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/call_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="جاري الاتصال..."
+        android:textColor="@color/core_grey_50"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/call_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:textColor="@color/core_white"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/call_contact_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="جهة الاتصال"
+        android:textColor="@color/core_white"
+        android:textSize="20sp"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/call_encryption_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🔒 مشفر بالكامل"
+        android:textColor="@color/core_ultramarine"
+        android:textSize="12sp"
+        android:layout_marginBottom="48dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btn_mute"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_mute"
+            android:background="@drawable/bg_button_secondary"
+            android:contentDescription="Mute"
+            android:layout_margin="12dp" />
+
+        <ImageButton
+            android:id="@+id/btn_end_call"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ic_end_call"
+            android:background="@drawable/bg_end_call"
+            android:contentDescription="End Call"
+            android:layout_margin="12dp" />
+
+        <ImageButton
+            android:id="@+id/btn_speaker"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_speaker"
+            android:background="@drawable/bg_button_secondary"
+            android:contentDescription="Speaker"
+            android:layout_margin="12dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

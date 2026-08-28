@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="call_quality_entries">
-        <item>@string/call_quality_high</item>
-        <item>@string/call_quality_saver</item>
-        <item>@string/call_quality_extreme</item>
+        <item>@string/settings_high_quality</item>
+        <item>@string/settings_data_saver</item>
+        <item>@string/settings_extreme_saver</item>
     </string-array>
 
     <string-array name="call_quality_values">
         <item>32</item>
         <item>16</item>
         <item>8</item>
+    </string-array>
+
+    <string-array name="encryption_modes">
+        <item>AES-256-GCM</item>
+        <item>ChaCha20-Poly1305</item>
+        <item>Double Encryption</item>
     </string-array>
 </resources>

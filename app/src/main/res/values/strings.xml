@@ -2,22 +2,78 @@
 <resources>
     <string name="app_name">SecureLine</string>
     <string name="app_description">أقوى تطبيق اتصالات مشفر</string>
+    <string name="app_tagline">خصوصيتك حق أساسي</string>
 
-    <string name="menu_settings">الإعدادات</string>
-    <string name="menu_new_chat">محادثة جديدة</string>
-    <string name="menu_new_call">مكالمة جديدة</string>
+    <string name="login_title">تسجيل الدخول</string>
+    <string name="login_username">اسم المستخدم أو البريد الإلكتروني</string>
+    <string name="login_password">كلمة المرور</string>
+    <string name="login_button">تسجيل الدخول</string>
+    <string name="login_register">إنشاء حساب جديد</string>
+    <string name="login_forgot">نسيت كلمة المرور؟</string>
 
+    <string name="register_title">إنشاء حساب جديد</string>
+    <string name="register_subtitle">أنشئ هويتك الرقمية المجهولة</string>
+    <string name="register_display_name">الاسم المعروض (اختياري)</string>
+    <string name="register_username">اسم المستخدم</string>
+    <string name="register_password">كلمة المرور (8 أحرف على الأقل)</string>
+    <string name="register_confirm_password">تأكيد كلمة المرور</string>
+    <string name="register_button">إنشاء الحساب</string>
+    <string name="register_back">لديك حساب بالفعل؟ تسجيل الدخول</string>
+
+    <string name="chat_title">المحادثة</string>
+    <string name="chat_input_hint">اكتب رسالة...</string>
+    <string name="chat_send">إرسال</string>
+
+    <string name="call_status_connecting">جاري الاتصال...</string>
+    <string name="call_status_connected">متصل</string>
+    <string name="call_status_ended">تم إنهاء المكالمة</string>
+    <string name="call_encrypted">🔒 مشفر بالكامل</string>
+    <string name="call_mute">كتم الصوت</string>
+    <string name="call_speaker">مكبر الصوت</string>
+    <string name="call_end">إنهاء المكالمة</string>
+
+    <string name="contacts_title">جهات الاتصال</string>
+    <string name="contacts_add">إضافة جهة اتصال</string>
+
+    <string name="settings_title">الإعدادات</string>
     <string name="settings_security">الأمان والخصوصية</string>
     <string name="settings_tor">وضع الخفاء الكامل (Tor)</string>
-    <string name="settings_tor_summary">يمرر كل الاتصالات عبر شبكة Tor لإخفاء عنوان IP</string>
+    <string name="settings_tor_desc">يمرر كل الاتصالات عبر شبكة Tor لإخفاء عنوان IP</string>
     <string name="settings_encrypt_db">تشفير قاعدة البيانات</string>
-    <string name="settings_encrypt_db_summary">يشفر كل الرسائل المخزنة على الجهاز</string>
+    <string name="settings_encrypt_db_desc">يشفر كل الرسائل المخزنة على الجهاز</string>
+    <string name="settings_biometric">قفل التطبيق بالبصمة</string>
+    <string name="settings_screenshot">منع لقطات الشاشة</string>
+    <string name="settings_calls">المكالمات</string>
+    <string name="settings_call_quality">جودة المكالمات</string>
+    <string name="settings_high_quality">جودة عالية (32 كيلوبت)</string>
+    <string name="settings_data_saver">توفير البيانات (16 كيلوبت)</string>
+    <string name="settings_extreme_saver">توفير أقصى (8 كيلوبت)</string>
+    <string name="settings_logout">تسجيل الخروج</string>
+    <string name="settings_wipe">حذف جميع البيانات</string>
 
-    <string name="tor_starting">جاري الاتصال بشبكة Tor…</string>
+    <string name="qr_scan_title">مسح رمز QR</string>
+    <string name="qr_scan_hint">وجه الكاميرا نحو رمز QR الخاص بجهة الاتصال</string>
+    <string name="qr_display_title">رمز QR الخاص بك</string>
+    <string name="qr_display_hint">امسح هذا الرمز لإضافة جهة الاتصال</string>
+
+    <string name="tor_starting">جارِ الاتصال بشبكة Tor...</string>
     <string name="tor_connected">متصل بشبكة Tor</string>
+    <string name="tor_disconnected">تم إيقاف Tor</string>
     <string name="tor_failed">فشل الاتصال بشبكة Tor</string>
 
-    <string name="call_quality_high">جودة عالية</string>
-    <string name="call_quality_saver">توفير البيانات</string>
-    <string name="call_quality_extreme">توفير أقصى</string>
+    <string name="msg_sent_encrypted">تم إرسال الرسالة (مشفرة + معمية)</string>
+    <string name="msg_received_decrypted">تم استلام رسالة مشفرة</string>
+    <string name="msg_encryption_failed">فشل التشفير</string>
+    <string name="msg_decryption_failed">فشل فك التشفير</string>
+
+    <string name="verify_title">التحقق من البصمة</string>
+    <string name="verify_hint">قارن هذه البصمة مع جهة الاتصال الخاصة بك للتأكد من عدم وجود تنصت.</string>
+    <string name="verify_confirm">تأكيد التحقق</string>
+    <string name="verify_cancel">إلغاء</string>
+
+    <string name="ok">موافق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="confirm">تأكيد</string>
+    <string name="delete">حذف</string>
+    <string name="back">رجوع</string>
 </resources>

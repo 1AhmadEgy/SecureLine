@@ -1,78 +1,16 @@
 package com.secureline.secureline.network;
 
 public class NetworkConfig {
+    // ⚠️ إعدادات الاتصال بالخادم (Server)
 
-    private String serverUrl;
-    private String stunServer;
-    private String turnServer;
-    private int connectionTimeoutMs;
-    private int readTimeoutMs;
-    private int writeTimeoutMs;
-    private boolean torEnabled;
-
-    public NetworkConfig() {
-        serverUrl = "https://localhost:8080";
-        stunServer = "stun:stun.l.google.com:19302";
-        turnServer = "";
-        connectionTimeoutMs = 10000;
-        readTimeoutMs = 30000;
-        writeTimeoutMs = 30000;
-        torEnabled = false;
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    public void setServerUrl(String serverUrl) {
-        this.serverUrl = serverUrl;
-    }
-
-    public String getStunServer() {
-        return stunServer;
-    }
-
-    public void setStunServer(String stunServer) {
-        this.stunServer = stunServer;
-    }
-
-    public String getTurnServer() {
-        return turnServer;
-    }
-
-    public void setTurnServer(String turnServer) {
-        this.turnServer = turnServer;
-    }
-
-    public int getConnectionTimeoutMs() {
-        return connectionTimeoutMs;
-    }
-
-    public void setConnectionTimeoutMs(int connectionTimeoutMs) {
-        this.connectionTimeoutMs = connectionTimeoutMs;
-    }
-
-    public int getReadTimeoutMs() {
-        return readTimeoutMs;
-    }
-
-    public void setReadTimeoutMs(int readTimeoutMs) {
-        this.readTimeoutMs = readTimeoutMs;
-    }
-
-    public int getWriteTimeoutMs() {
-        return writeTimeoutMs;
-    }
-
-    public void setWriteTimeoutMs(int writeTimeoutMs) {
-        this.writeTimeoutMs = writeTimeoutMs;
-    }
-
-    public boolean isTorEnabled() {
-        return torEnabled;
-    }
-
-    public void setTorEnabled(boolean torEnabled) {
-        this.torEnabled = torEnabled;
-    }
+    // إذا كنت ستجرب التطبيق على "محاكي أندرويد" (Emulator) على نفس جهازك، اترك هذا الـ IP كما هو:
+    // الرقم 10.0.2.2 هو الـ Localhost الافتراضي للمحاكي.
+    // أما إذا كنت ستجرب على هاتف حقيقي، فقم بتغييره إلى عنوان IP الخاص بحاسوبك (مثال: 192.168.1.5)
+    public static final String SERVER_IP = "10.0.2.2"; 
+    
+    // المنفذ الذي يعمل عليه الخادم الخاص بنا (كما تم تعريفه في ServerMain)
+    public static final int SERVER_PORT = 8080;
+    
+    // مهلة الاتصال بالمللي ثانية (10 ثوانٍ)
+    public static final int CONNECTION_TIMEOUT = 10000;
 }

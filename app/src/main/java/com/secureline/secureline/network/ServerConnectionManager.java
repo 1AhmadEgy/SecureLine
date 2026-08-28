@@ -1,56 +1,102 @@
 package com.secureline.secureline.network;
 
+import android.util.Log;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
 public class ServerConnectionManager {
+    private static final String TAG = "ServerConnection";
+    private Socket socket;
+    private BufferedReader reader;
+    private OutputStream writer;
+    private boolean isConnected = false;
+    private ServerMessageListener listener;
 
-    private final NetworkConfig config;
-    private ConnectionMonitor connectionMonitor;
-    private WebSocketManager webSocketManager;
-    private boolean isConnected;
+    public interface ServerMessageListener {
+        void onConnected();
+        void onDisconnected();
+        void onMessageReceived(String message);
+        void onError(Exception e);
+    }
 
-    public ServerConnectionManager(NetworkConfig config) {
-        this.config = config;
-        this.connectionMonitor = new ConnectionMonitor();
-        this.isConnected = false;
+    public void setListener(ServerMessageListener listener) {
+        this.listener = listener;
     }
 
     public void connect() {
-        connectionMonitor.setState(ConnectionState.CONNECTING);
-        webSocketManager = new WebSocketManager();
-        webSocketManager.setMessageListener(new WebSocketManager.MessageListener() {
-            @Override
-            public void onTextMessage(String text) {
-                // Handle text message
-            }
+        new Thread(() -> {
+            try {
+                socket = new Socket();
+                // الاتصال بالخادم باستخدام IP والمنفذ المحددين
+                socket.connect(new InetSocketAddress(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT), NetworkConfig.CONNECTION_TIMEOUT);
+                
+                reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                writer = socket.getOutputStream();
+                isConnected = true;
 
-            @Override
-            public void onBinaryMessage(byte[] data) {
-                // Handle binary message
+                if (listener != null) {
+                    listener.onConnected();
+                }
+
+                listenForMessages();
+            } catch (Exception e) {
+                isConnected = false;
+                if (listener != null) {
+                    listener.onError(e);
+                }
             }
-        });
-        webSocketManager.connect(config.getServerUrl());
-        isConnected = true;
-        connectionMonitor.setState(ConnectionState.CONNECTED);
+        }).start();
+    }
+
+    private void listenForMessages() {
+        try {
+            String line;
+            while (isConnected && (line = reader.readLine()) != null) {
+                if (listener != null) {
+                    listener.onMessageReceived(line);
+                }
+            }
+        } catch (Exception e) {
+            if (isConnected && listener != null) {
+                listener.onError(e);
+            }
+        } finally {
+            disconnect();
+        }
+    }
+
+    public void sendMessage(String message) {
+        if (!isConnected || writer == null) return;
+        
+        new Thread(() -> {
+            try {
+                writer.write((message + "\n").getBytes(StandardCharsets.UTF_8));
+                writer.flush();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to send message", e);
+            }
+        }).start();
     }
 
     public void disconnect() {
-        if (webSocketManager != null) {
-            webSocketManager.disconnect();
-        }
         isConnected = false;
-        connectionMonitor.setState(ConnectionState.DISCONNECTED);
+        try {
+            if (reader != null) reader.close();
+            if (writer != null) writer.close();
+            if (socket != null) socket.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error closing connection", e);
+        }
+        if (listener != null) {
+            listener.onDisconnected();
+        }
     }
-
+    
     public boolean isConnected() {
         return isConnected;
-    }
-
-    public ConnectionMonitor getConnectionMonitor() {
-        return connectionMonitor;
-    }
-
-    public void sendMessage(String recipientId, byte[] encryptedData) {
-        if (webSocketManager != null && isConnected) {
-            webSocketManager.sendBinary(encryptedData);
-        }
     }
 }

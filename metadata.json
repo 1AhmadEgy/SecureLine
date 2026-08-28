@@ -1,0 +1,8 @@
+{
+  "name": "SecureLine",
+  "description": "A fully encrypted end-to-end communication application prototype.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

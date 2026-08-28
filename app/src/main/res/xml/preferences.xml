@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pref_tor_enabled"
+        android:title="@string/settings_tor"
+        android:summary="@string/settings_tor_summary"
+        android:defaultValue="false" />
+
+    <SwitchPreference
+        android:key="pref_encrypt_database"
+        android:title="@string/settings_encrypt_db"
+        android:summary="@string/settings_encrypt_db_summary"
+        android:defaultValue="true" />
+
+    <ListPreference
+        android:key="pref_call_quality"
+        android:title="جودة المكالمات"
+        android:entries="@array/call_quality_entries"
+        android:entryValues="@array/call_quality_values"
+        android:defaultValue="16" />
+
+</PreferenceScreen>

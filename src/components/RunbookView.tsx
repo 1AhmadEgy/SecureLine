@@ -391,11 +391,38 @@ if (torManager.isTorRunning()) {
           </div>
         </section>
 
+        {/* Step 9: GitHub & Open Source */}
+        <section className="bg-primary border border-gray-800 rounded-xl overflow-hidden">
+          <div className="bg-gray-900/50 p-4 border-b border-gray-800 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">11</div>
+            <h3 className="font-semibold text-white">الوحدة 9: النشر والمصادر المفتوحة (GitHub)</h3>
+          </div>
+          <div className="p-5 space-y-4 text-sm text-text-secondary">
+            <p>ربط المشروع المحلي بمستودع GitHub ورفع الشيفرة المصدرية (بدون المفاتيح الحساسة) لبناء مجتمع مفتوح المصدر.</p>
+            
+            <div className="bg-black border border-gray-800 rounded-lg p-3 font-mono text-xs text-blue-400 text-start overflow-x-auto" dir="ltr">
+              <div className="text-gray-500 mb-2"># 1. Initialize & Link Remote</div>
+              <div>git remote add origin https://github.com/1AhmadEgy/SecureLine.git</div>
+              <div className="text-gray-500 mt-2 mb-2"># 2. Commit & Push</div>
+              <div>git add .</div>
+              <div>git commit -m "SecureLine v1.0: E2EE + Tor + SQLCipher + Obfuscation"</div>
+              <div>git branch -M main</div>
+              <div>git push -u origin main</div>
+            </div>
+
+            <h4 className="font-medium text-white mt-4 mb-2 flex items-center"><Code size={14} className="text-accent me-2" /> إنشاء ملف README.md</h4>
+            <div className="bg-black/50 border border-gray-800 rounded-lg p-3 font-mono text-xs text-accent text-start" dir="ltr">
+              <div className="text-gray-500 mb-1"># SecureLine 🔒</div>
+              <div className="text-gray-400">تطبيق اتصالات هاتفية ومراسلة فورية **مشفر بالكامل** مبني على Signal Protocol، مع طبقات حماية إضافية فريدة.</div>
+            </div>
+          </div>
+        </section>
+
         {/* Next Steps */}
         <section className="bg-emerald-900/20 border border-emerald-900/50 rounded-xl p-5 flex items-center justify-between">
           <div>
-            <h4 className="text-emerald-400 font-semibold flex items-center"><CheckCheck size={18} className="me-2" /> اكتمل المشروع الأساسي!</h4>
-            <p className="text-sm text-emerald-200/70 mt-1">المرحلة القادمة: إزالة رقم الهاتف واستبداله بنظام الهوية الرقمية المجهولة (DID).</p>
+            <h4 className="text-emerald-400 font-semibold flex items-center"><CheckCheck size={18} className="me-2" /> اكتملت المرحلة الأولى!</h4>
+            <p className="text-sm text-emerald-200/70 mt-1">المرحلة الثانية: إزالة رقم الهاتف واستبداله بنظام الهوية الرقمية المجهولة (DID).</p>
           </div>
         </section>
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SecureLine" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@color/core_black</item>
+        <item name="android:navigationBarColor">@color/core_black</item>
+        <item name="android:windowBackground">@color/core_black</item>
+        <item name="colorPrimary">@color/core_ultramarine</item>
+        <item name="colorPrimaryDark">@color/core_black</item>
+        <item name="colorAccent">@color/core_ultramarine</item>
+        <item name="android:textColorPrimary">@color/core_white</item>
+        <item name="android:textColorSecondary">@color/core_grey_50</item>
+    </style>
+</resources>

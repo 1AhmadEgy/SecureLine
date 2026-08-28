@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SecureLine</string>
+    <string name="app_description">أقوى تطبيق اتصالات مشفر</string>
+
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_new_chat">محادثة جديدة</string>
+    <string name="menu_new_call">مكالمة جديدة</string>
+
+    <string name="settings_security">الأمان والخصوصية</string>
+    <string name="settings_tor">وضع الخفاء الكامل (Tor)</string>
+    <string name="settings_tor_summary">يمرر كل الاتصالات عبر شبكة Tor لإخفاء عنوان IP</string>
+    <string name="settings_encrypt_db">تشفير قاعدة البيانات</string>
+    <string name="settings_encrypt_db_summary">يشفر كل الرسائل المخزنة على الجهاز</string>
+
+    <string name="tor_starting">جاري الاتصال بشبكة Tor…</string>
+    <string name="tor_connected">متصل بشبكة Tor</string>
+    <string name="tor_failed">فشل الاتصال بشبكة Tor</string>
+
+    <string name="call_quality_high">جودة عالية</string>
+    <string name="call_quality_saver">توفير البيانات</string>
+    <string name="call_quality_extreme">توفير أقصى</string>
+</resources>

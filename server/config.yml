@@ -1,0 +1,23 @@
+server:
+  type: simple
+  applicationContextPath: /
+  connectorType: http
+  port: 8080
+
+database:
+  driverClass: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5432/secureline_db
+  user: secureline
+  password: SecureLine2024!
+
+redis:
+  url: redis://localhost:6379
+
+security:
+  zkSecret: "your-super-secret-zookeeper-key"
+  unidentifiedAccessEnabled: true
+
+logging:
+  level: INFO
+  loggers:
+    org.whispersystems: DEBUG

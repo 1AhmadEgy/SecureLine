@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: secureline
+      POSTGRES_PASSWORD: SecureLine2024!
+      POSTGRES_DB: secureline_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
+  signal-server:
+    build: .
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: "jdbc:postgresql://postgres:5432/secureline_db"
+      DATABASE_USERNAME: secureline
+      DATABASE_PASSWORD: SecureLine2024!
+      REDIS_URL: "redis://redis:6379"
+      ZK_SECRET: "your-super-secret-zookeeper-key"
+      UNIDENTIFIED_ACCESS_ENABLED: "true"
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

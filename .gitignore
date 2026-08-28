@@ -6,3 +6,18 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# SecureLine ignores
+*.apk
+*.aab
+app/build/
+local.properties
+.gradle/
+.idea/
+google-services.json
+*.keystore
+*.jks
+*.p12
+*.key
+*.pem
+

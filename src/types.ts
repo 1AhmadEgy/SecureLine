@@ -1,4 +1,4 @@
-export type ViewMode = 'chat' | 'calls' | 'settings' | 'architecture';
+export type ViewMode = 'chat' | 'calls' | 'settings' | 'architecture' | 'vision' | 'runbook';
 
 export interface Message {
   id: string;

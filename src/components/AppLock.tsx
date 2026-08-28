@@ -23,8 +23,8 @@ export function AppLock({ onUnlock }: AppLockProps) {
         </div>
         
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">SecureLine Locked</h1>
-          <p className="text-text-secondary text-sm">Verify your identity to continue</p>
+          <h1 className="text-2xl font-bold tracking-tight">SecureLine مقفل</h1>
+          <p className="text-text-secondary text-sm">قم بتأكيد هويتك للمتابعة</p>
         </div>
 
         <button 
@@ -41,7 +41,7 @@ export function AppLock({ onUnlock }: AppLockProps) {
             className={`transition-colors duration-300 ${authenticating ? 'text-accent animate-pulse' : 'text-text-secondary'}`} 
           />
           <span className={`absolute -bottom-8 text-xs font-medium transition-colors ${authenticating ? 'text-accent' : 'text-text-secondary'}`}>
-            {authenticating ? 'Authenticating...' : 'Tap to Unlock'}
+            {authenticating ? 'جاري التحقق...' : 'اضغط لفك القفل'}
           </span>
         </button>
       </div>

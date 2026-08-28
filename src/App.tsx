@@ -4,6 +4,8 @@ import { ChatView } from './components/ChatView';
 import { CallsView } from './components/CallsView';
 import { SettingsView } from './components/SettingsView';
 import { ArchitectureView } from './components/ArchitectureView';
+import { VisionView } from './components/VisionView';
+import { RunbookView } from './components/RunbookView';
 import { AppLock } from './components/AppLock';
 import type { ViewMode } from './types';
 
@@ -24,6 +26,8 @@ export default function App() {
         {currentView === 'calls' && <CallsView />}
         {currentView === 'settings' && <SettingsView />}
         {currentView === 'architecture' && <ArchitectureView />}
+        {currentView === 'vision' && <VisionView />}
+        {currentView === 'runbook' && <RunbookView />}
       </main>
     </div>
   );

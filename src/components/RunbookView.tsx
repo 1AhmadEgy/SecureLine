@@ -1,4 +1,4 @@
-import { Terminal, Code, CheckCircle, Smartphone, FolderGit2, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Terminal, Code, CheckCircle, Smartphone, FolderGit2, AlertTriangle, ArrowLeft, ShieldCheck, Monitor, Globe, CheckCheck } from 'lucide-react';
 
 export function RunbookView() {
   return (
@@ -418,11 +418,44 @@ if (torManager.isTorRunning()) {
           </div>
         </section>
 
+        {/* Step 10: Closed Beta & Security Audit */}
+        <section className="bg-primary border border-gray-800 rounded-xl overflow-hidden">
+          <div className="bg-gray-900/50 p-4 border-b border-gray-800 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-emerald-400/10 flex items-center justify-center text-emerald-400 font-bold">12</div>
+            <h3 className="font-semibold text-white">المرحلة الحالية: مسار الاختبار المغلق (Google Play Closed Beta)</h3>
+          </div>
+          <div className="p-5 space-y-4 text-sm text-text-secondary">
+            <p className="text-gray-300">
+              تلبية متطلبات Google Play للحسابات الشخصية: اختبار مستمر مع <span className="text-emerald-400 font-medium">12 مختبراً على الأقل لمدة 14 يوماً متواصلة</span> قبل طلب النشر على المسار العام.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              <div className="bg-black border border-gray-800 p-3 rounded-lg">
+                <div className="text-xs text-text-secondary">مجموعة الاختبار (Google Group)</div>
+                <div className="text-sm font-mono text-accent mt-1">secureline-beta-testers</div>
+                <div className="text-xs text-gray-500 mt-1">20 مختبراً مستهدفاً لتغطية متطلبات الـ 14 يوماً</div>
+              </div>
+              <div className="bg-black border border-gray-800 p-3 rounded-lg">
+                <div className="text-xs text-text-secondary">حزمة الإصدار (Release Bundle)</div>
+                <div className="text-sm font-mono text-emerald-400 mt-1">app-release.aab</div>
+                <div className="text-xs text-gray-500 mt-1">مُصغّرة ومحمية بـ R8 Full Mode وموقّعة بمفتاح الرفع</div>
+              </div>
+            </div>
+
+            <div className="bg-black border border-gray-800 rounded-lg p-3 font-mono text-xs text-text-secondary text-start overflow-x-auto" dir="ltr">
+              <div className="text-gray-500 mb-1"># بناء حزمة الإنتاج للاختبار المغلق</div>
+              <div className="text-emerald-400">./gradlew clean bundleRelease --no-daemon</div>
+              <div className="text-gray-500 mt-2 mb-1"># فحص التوقيع وبصمة الحزمة</div>
+              <div className="text-emerald-400">sha256sum app/build/outputs/bundle/release/app-release.aab</div>
+            </div>
+          </div>
+        </section>
+
         {/* Next Steps */}
         <section className="bg-emerald-900/20 border border-emerald-900/50 rounded-xl p-5 flex items-center justify-between">
           <div>
-            <h4 className="text-emerald-400 font-semibold flex items-center"><CheckCheck size={18} className="me-2" /> اكتملت المرحلة الأولى!</h4>
-            <p className="text-sm text-emerald-200/70 mt-1">المرحلة الثانية: إزالة رقم الهاتف واستبداله بنظام الهوية الرقمية المجهولة (DID).</p>
+            <h4 className="text-emerald-400 font-semibold flex items-center"><CheckCheck size={18} className="me-2" /> جميع المراحل الهندسية (1-30) مكتملة وموثقة!</h4>
+            <p className="text-sm text-emerald-200/70 mt-1">التركيز الحالي: تشغيل مسار الـ 14 يوماً في Google Play، ومراقبة استقرار Tor ومكالمات WebRTC.</p>
           </div>
         </section>
 

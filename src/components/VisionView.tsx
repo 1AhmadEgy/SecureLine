@@ -117,43 +117,54 @@ export function VisionView() {
 
         {/* Roadmap */}
         <section className="pb-8">
-          <h3 className="text-lg font-semibold text-white mb-6">خارطة الطريق التنفيذية (Roadmap)</h3>
+          <h3 className="text-lg font-semibold text-white mb-6">خارطة الطريق التنفيذية المحدثة (Roadmap & Status)</h3>
           <div className="space-y-6 relative before:absolute before:inset-0 before:ms-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-accent before:via-gray-800 before:to-transparent">
             
-            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
               <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-accent bg-black shrink-0 md:order-1 md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2 shadow-[0_0_10px_rgba(0,255,170,0.5)] z-10"></div>
               <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-primary border border-accent/30 p-5 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-bold text-white text-base">المرحلة 1: MVP (3 أشهر)</h4>
-                  <span className="text-xs font-medium text-black bg-accent px-2 py-1 rounded-full">الحالية</span>
+                  <h4 className="font-bold text-white text-base">المراحل 1-10: النواة المعمارية</h4>
+                  <span className="text-xs font-medium text-black bg-accent px-2 py-1 rounded-full">مكتملة ✓</span>
                 </div>
                 <ul className="text-sm text-text-secondary space-y-1 mt-3">
-                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> تشغيل Signal-Android محلياً</li>
-                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> تغيير الهوية والواجهة (AMOLED)</li>
-                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> إضافة طبقة التعمية</li>
-                  <li className="flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-gray-600 me-2.5 ms-0.5"></span> اختبار مكالمات P2P</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> تشفير Signal Protocol (X3DH + Double Ratchet)</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> قاعدة بيانات SQLCipher وتدمير جنائي Crypto-Shredding</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> عزل التوجيه عبر مسارات شبكة Tor بدون تسريب DNS</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> مكالمات WebRTC P2P مباشرة مع تشفير SRTP</li>
                 </ul>
               </div>
             </div>
 
             <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-              <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-gray-700 bg-black shrink-0 md:order-1 md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2 z-10"></div>
-              <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-primary border border-gray-800 p-5 rounded-xl opacity-70">
-                <h4 className="font-bold text-white text-base mb-1">المرحلة 2: الإطلاق التجريبي (6 أشهر)</h4>
+              <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-accent bg-black shrink-0 md:order-1 md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2 shadow-[0_0_10px_rgba(0,255,170,0.5)] z-10"></div>
+              <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-primary border border-accent/30 p-5 rounded-xl shadow-lg">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-bold text-white text-base">المراحل 11-20: المناعة المتقدمة</h4>
+                  <span className="text-xs font-medium text-black bg-accent px-2 py-1 rounded-full">مكتملة ✓</span>
+                </div>
                 <ul className="text-sm text-text-secondary space-y-1 mt-3">
-                  <li>• دمج شبكة Tor</li>
-                  <li>• تنفيذ SQLCipher</li>
-                  <li>• اختبار على أجهزة متعددة</li>
-                  <li>• إطلاق على متجر F-Droid</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> رسائل ذاتية التدمير ونسخ احتياطي صفري المعرفة</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> تشفير مجموعات MLS RFC 9420 وبصمات الأمان 60-Digit</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> شبكة Mesh أوفلاين (Bluetooth + Wi-Fi Direct)</li>
+                  <li className="flex items-center text-white"><span className="text-accent me-2">✓</span> تجاوز الحجب Snowflake/obfs4 وتدقيق OWASP MASVS</li>
                 </ul>
               </div>
             </div>
 
-            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-              <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-gray-800 bg-black shrink-0 md:order-1 md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2 z-10"></div>
-              <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-transparent border border-dashed border-gray-800 p-5 rounded-xl opacity-50">
-                <h4 className="font-bold text-white text-base mb-1">المرحلة 3: الإطلاق الكامل (12 شهراً)</h4>
-                <p className="text-sm text-text-secondary mt-2">نسخة iOS، نسخة سطح المكتب (Desktop)، وإطلاق برنامج مكافآت الباحثين الأمنيين (Bug Bounty).</p>
+            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+              <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-emerald-400 bg-black shrink-0 md:order-1 md:group-odd:translate-x-1/2 md:group-even:-translate-x-1/2 shadow-[0_0_12px_rgba(52,211,153,0.8)] z-10"></div>
+              <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-primary border border-emerald-500/50 p-5 rounded-xl shadow-xl">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-bold text-white text-base">المرحلة 22+: الإطلاق التجريبي المغلق (Closed Beta)</h4>
+                  <span className="text-xs font-medium text-black bg-emerald-400 px-2.5 py-1 rounded-full animate-pulse">قيد التشغيل الآن</span>
+                </div>
+                <ul className="text-sm text-text-secondary space-y-1 mt-3">
+                  <li className="flex items-center text-emerald-300"><span className="text-emerald-400 me-2">●</span> تجنيد 15-20 مختبراً على Google Group للمسار المغلق</li>
+                  <li className="flex items-center text-emerald-300"><span className="text-emerald-400 me-2">●</span> تلبية شرط Google Play: اختبار متصل لمدة 14 يوماً</li>
+                  <li className="flex items-center text-text-secondary"><span className="w-1.5 h-1.5 rounded-full bg-gray-600 me-2.5 ms-0.5"></span> جمع مقاييس ANR والبطارية عبر Play Vitals</li>
+                  <li className="flex items-center text-text-secondary"><span className="w-1.5 h-1.5 rounded-full bg-gray-600 me-2.5 ms-0.5"></span> تقديم طلب الإنتاج الرسمي (Apply for Production)</li>
+                </ul>
               </div>
             </div>
 

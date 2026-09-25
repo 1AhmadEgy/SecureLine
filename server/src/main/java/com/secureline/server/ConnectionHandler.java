@@ -37,13 +37,21 @@ public class ConnectionHandler implements Runnable {
         } finally {
             try {
                 clientSocket.close();
-            } catch (Exception e) {
-                // Ignore
+            } catch (Exception ignored) {
+                // Ignore close failures.
             }
         }
     }
 
     private String handleRequest(String request) {
-        return "OK";
+        if (request == null || request.trim().isEmpty()) {
+            return "ERROR INVALID_REQUEST";
+        }
+
+        // The wire protocol is not defined in this legacy handler. Do not
+        // report success for arbitrary input until a versioned protocol is
+        // implemented and validated.
+        logger.warning("Rejected unsupported request");
+        return "ERROR UNSUPPORTED_REQUEST";
     }
 }

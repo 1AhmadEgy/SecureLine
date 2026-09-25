@@ -10,58 +10,65 @@ import org.whispersystems.libsignal.protocol.SignalMessage;
 import org.whispersystems.libsignal.state.PreKeyBundle;
 import org.whispersystems.libsignal.state.SignalProtocolStore;
 
-public class SignalProtocolManager {
+public final class SignalProtocolManager {
 
     private final SignalProtocolStore protocolStore;
     private final IdentityKeyPair identityKeyPair;
     private final int registrationId;
 
-    public SignalProtocolManager(SignalProtocolStore store, IdentityKeyPair keyPair, int regId) {
+    public SignalProtocolManager(
+            SignalProtocolStore store,
+            IdentityKeyPair keyPair,
+            int registrationId) {
+        if (store == null || keyPair == null) {
+            throw new IllegalArgumentException("Signal store and identity key pair are required");
+        }
+        if (registrationId <= 0) {
+            throw new IllegalArgumentException("Invalid Signal registration id");
+        }
         this.protocolStore = store;
         this.identityKeyPair = keyPair;
-        this.registrationId = regId;
+        this.registrationId = registrationId;
     }
 
     public byte[] encryptMessage(String remoteAddress, byte[] plaintext) {
+        requirePayload(remoteAddress, plaintext);
         try {
             SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
             SessionCipher cipher = new SessionCipher(protocolStore, address);
             CiphertextMessage message = cipher.encrypt(plaintext);
             return message.serialize();
         } catch (Exception e) {
-            return null;
+            throw new IllegalStateException("Signal encryption failed", e);
         }
     }
 
     public byte[] decryptMessage(String remoteAddress, byte[] ciphertext) {
+        requirePayload(remoteAddress, ciphertext);
         try {
             SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
-            SessionCipher cipher = new SessionCipher(protocolStore, address);
-            byte[] plaintext;
+
             try {
-                SignalMessage message = new SignalMessage(ciphertext);
-                plaintext = cipher.decrypt(message);
-            } catch (Exception e1) {
-                try {
-                    PreKeySignalMessage message = new PreKeySignalMessage(ciphertext);
-                    plaintext = cipher.decrypt(message);
-                } catch (Exception e2) {
-                    return null;
-                }
+                return new SessionCipher(protocolStore, address)
+                        .decrypt(new PreKeySignalMessage(ciphertext));
+            } catch (Exception ignored) {
+                return new SessionCipher(protocolStore, address)
+                        .decrypt(new SignalMessage(ciphertext));
             }
-            return plaintext;
         } catch (Exception e) {
-            return null;
+            throw new SecurityException("Signal decryption failed", e);
         }
     }
 
     public void buildSession(String remoteAddress, PreKeyBundle preKeyBundle) {
+        if (remoteAddress == null || remoteAddress.isBlank() || preKeyBundle == null) {
+            throw new IllegalArgumentException("Remote address and pre-key bundle are required");
+        }
         try {
             SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
-            SessionBuilder builder = new SessionBuilder(protocolStore, address);
-            builder.process(preKeyBundle);
+            new SessionBuilder(protocolStore, address).process(preKeyBundle);
         } catch (Exception e) {
-            // Session build failed
+            throw new IllegalStateException("Signal session establishment failed", e);
         }
     }
 
@@ -71,5 +78,14 @@ public class SignalProtocolManager {
 
     public int getRegistrationId() {
         return registrationId;
+    }
+
+    private static void requirePayload(String address, byte[] payload) {
+        if (address == null || address.isBlank()) {
+            throw new IllegalArgumentException("Remote address is required");
+        }
+        if (payload == null || payload.length == 0) {
+            throw new IllegalArgumentException("Payload is required");
+        }
     }
 }

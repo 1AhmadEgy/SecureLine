@@ -14,6 +14,9 @@ android {
         versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "SECURELINE_SERVER_HOST", ""10.0.2.2""
+        buildConfigField "int", "SECURELINE_SERVER_PORT", "8080"
     }
 
     buildTypes {
@@ -34,6 +37,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 
@@ -54,13 +58,10 @@ dependencies {
 
     implementation 'org.webrtc:google-webrtc:1.0.32006'
 
-    // Keep a single Tor implementation to avoid duplicate classes and conflicting APIs.
     implementation 'info.guardianproject:tor-android:0.4.7.8'
 
     implementation 'net.zetetic:android-database-sqlcipher:4.5.4'
 
-    // Legacy Signal Protocol dependency retained temporarily for compatibility.
-    // The messaging crypto layer will be migrated to a maintained implementation in a later phase.
     implementation 'org.whispersystems:signal-protocol-java:2.8.1'
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'

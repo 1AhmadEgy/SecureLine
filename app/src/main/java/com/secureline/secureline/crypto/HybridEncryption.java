@@ -6,7 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class HybridEncryption {
+/**\n * Legacy hybrid envelope. This class is intentionally fail-closed until a real\n * post-quantum KEM implementation is integrated. It must not be presented as PQC.\n */\n@Deprecated\npublic class HybridEncryption {
 
     private static final int SESSION_KEY_SIZE = 32;
     private static final int IV_SIZE = 12;

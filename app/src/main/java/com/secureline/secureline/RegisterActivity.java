@@ -56,13 +56,18 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        AuthenticationService authService = new AuthenticationService();
-        authService.registerUser(username, password);
+        AuthenticationService authService = new AuthenticationService(this);
+        boolean created = authService.registerUser(username, password);
+        if (!created) {
+            Toast.makeText(this, "اسم المستخدم مستخدم بالفعل", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         IdentityManager identityManager = new IdentityManager();
         String fingerprint = identityManager.getFingerprint();
 
-        Toast.makeText(this, "تم إنشاء الحساب بنجاح\nبصمتك: " + fingerprint, 
+        Toast.makeText(this, "تم إنشاء الحساب بنجاح
+بصمتك: " + fingerprint,
             Toast.LENGTH_LONG).show();
 
         startActivity(new android.content.Intent(this, LoginActivity.class));

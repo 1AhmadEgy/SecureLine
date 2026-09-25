@@ -1,30 +1,27 @@
 package com.secureline.server;
 
-import java.io.FileInputStream;
 import java.util.Properties;
 
 public class ServerConfig {
 
-    private final Properties properties;
+    private final Properties properties = new Properties();
 
-    public ServerConfig(String configFilePath) {
-        properties = new Properties();
-        try {
-            FileInputStream input = new FileInputStream(configFilePath);
-            properties.load(input);
-            input.close();
-        } catch (Exception e) {
-            setDefaults();
-        }
+    public ServerConfig() {
+        setDefaults();
     }
 
     private void setDefaults() {
-        properties.setProperty("server.port", "8080");
-        properties.setProperty("database.url", "jdbc:postgresql://localhost:5432/secureline_db");
-        properties.setProperty("database.username", "secureline");
-        properties.setProperty("database.password", "SecureLine2024!");
-        properties.setProperty("redis.url", "redis://localhost:6379");
-        properties.setProperty("security.zkSecret", "default-secret-key");
+        properties.setProperty("server.port", env("SECURELINE_SERVER_PORT", "8080"));
+        properties.setProperty("database.url", env("SECURELINE_DATABASE_URL", ""));
+        properties.setProperty("database.username", env("SECURELINE_DATABASE_USERNAME", ""));
+        properties.setProperty("database.password", env("SECURELINE_DATABASE_PASSWORD", ""));
+        properties.setProperty("redis.url", env("SECURELINE_REDIS_URL", ""));
+        properties.setProperty("security.zkSecret", env("SECURELINE_ZK_SECRET", ""));
+    }
+
+    private static String env(String name, String defaultValue) {
+        String value = System.getenv(name);
+        return value == null ? defaultValue : value.trim();
     }
 
     public int getServerPort() {
@@ -32,22 +29,22 @@ public class ServerConfig {
     }
 
     public String getDatabaseUrl() {
-        return properties.getProperty("database.url");
+        return properties.getProperty("database.url", "");
     }
 
     public String getDatabaseUsername() {
-        return properties.getProperty("database.username");
+        return properties.getProperty("database.username", "");
     }
 
     public String getDatabasePassword() {
-        return properties.getProperty("database.password");
+        return properties.getProperty("database.password", "");
     }
 
     public String getRedisUrl() {
-        return properties.getProperty("redis.url");
+        return properties.getProperty("redis.url", "");
     }
 
     public String getZkSecret() {
-        return properties.getProperty("security.zkSecret");
+        return properties.getProperty("security.zkSecret", "");
     }
 }

@@ -71,6 +71,10 @@ export function SettingsView() {
     ? localStorage.getItem('secureline_read_receipts_enabled') !== 'false'
     : true;
 
+  const initialTypingIndicators = typeof window !== 'undefined'
+    ? localStorage.getItem('secureline_typing_enabled') !== 'false'
+    : true;
+
   const [settingsGroups, setSettingsGroups] = useState<SettingGroup[]>([
     {
       title: 'المصادقة البيومترية وقفل التطبيق (WebAuthn / Passkeys)',
@@ -111,6 +115,12 @@ export function SettingsView() {
           name: 'بروتوكول مفاتيح البث للمجموعات (Signal Sender Keys)',
           description: 'توزيع مفاتيح سلاسل التشفير بين أعضاء المجموعة مع تدوير المفاتيح فوراً عند إضافة أو إزالة أي عضو',
           active: true,
+        },
+        {
+          id: 'typing_indicators',
+          name: 'مؤشرات جاري الكتابة المشفرة (Encrypted Typing Indicators)',
+          description: 'إرسال واستقبال إشعارات نبضات الكتابة مشفرة ومُموهة زمنياً لحماية خصوصية نمط الكتابة والسرعة',
+          active: initialTypingIndicators,
         },
       ]
     },
@@ -250,6 +260,11 @@ export function SettingsView() {
           if (settingId === 'e2ee_read_receipts') {
             localStorage.setItem('secureline_read_receipts_enabled', String(nextActive));
             window.dispatchEvent(new CustomEvent('secureline_receipts_toggled', { detail: nextActive }));
+            return { ...s, active: nextActive };
+          }
+          if (settingId === 'typing_indicators') {
+            localStorage.setItem('secureline_typing_enabled', String(nextActive));
+            window.dispatchEvent(new CustomEvent('secureline_typing_toggled', { detail: nextActive }));
             return { ...s, active: nextActive };
           }
           return { ...s, active: nextActive };

@@ -163,3 +163,49 @@ export async function decryptAndDownloadFile(
 
   return downloadUrl;
 }
+
+/**
+ * Decrypts an AES-256-GCM encrypted file and returns its plaintext as UTF-8 string (zero disk footprint).
+ */
+export async function decryptFileToText(
+  encryptedBlob: Blob | ArrayBuffer,
+  ivHex: string,
+  keyRawHex: string
+): Promise<string> {
+  const iv = hexToUint8Array(ivHex);
+  const keyBytes = hexToUint8Array(keyRawHex);
+
+  const key = await window.crypto.subtle.importKey(
+    'raw',
+    keyBytes,
+    { name: 'AES-GCM' },
+    false,
+    ['decrypt']
+  );
+
+  const ciphertextBuffer = encryptedBlob instanceof Blob 
+    ? await encryptedBlob.arrayBuffer() 
+    : encryptedBlob;
+
+  const decryptedBuffer = await window.crypto.subtle.decrypt(
+    {
+      name: 'AES-GCM',
+      iv,
+    },
+    key,
+    ciphertextBuffer
+  );
+
+  return new TextDecoder('utf-8').decode(decryptedBuffer);
+}
+
+/**
+ * Creates an in-memory text File object (e.g. for "الكتابة.txt") ready for AES-256 encryption.
+ */
+export function createSecureTextFile(
+  fileName: string = 'الكتابة.txt',
+  content: string
+): File {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  return new File([blob], fileName, { type: 'text/plain;charset=utf-8' });
+}

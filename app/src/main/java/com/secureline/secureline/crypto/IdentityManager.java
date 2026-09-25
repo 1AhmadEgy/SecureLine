@@ -4,16 +4,12 @@ import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.util.KeyHelper;
 
-public class IdentityManager {
+public final class IdentityManager {
 
-    private IdentityKeyPair identityKeyPair;
-    private int registrationId;
+    private final IdentityKeyPair identityKeyPair;
+    private final int registrationId;
 
     public IdentityManager() {
-        generateIdentity();
-    }
-
-    private void generateIdentity() {
         identityKeyPair = KeyHelper.generateIdentityKeyPair();
         registrationId = KeyHelper.generateRegistrationId(false);
     }

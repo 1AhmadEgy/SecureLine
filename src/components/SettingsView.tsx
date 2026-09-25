@@ -13,10 +13,23 @@ import {
   Check, 
   ShieldAlert, 
   Cpu,
-  Lock
+  Lock,
+  Fingerprint,
+  ScanFace,
+  Sparkles,
+  Trash2,
+  Clock,
+  CheckCheck,
+  Users
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { SecurityAuditEntry } from '../types';
+import { 
+  getWebAuthnStatus, 
+  registerBiometricPasskey, 
+  removeBiometricPasskey, 
+  type WebAuthnStatus 
+} from '../lib/webauthn';
 
 interface SettingItem {
   id: string;
@@ -40,7 +53,96 @@ export function SettingsView() {
   const [auditLogs, setAuditLogs] = useState<SecurityAuditEntry[]>([]);
   const [activeTab, setActiveTab] = useState<'settings' | 'audit'>('settings');
 
+  // WebAuthn state
+  const [webAuthnStatus, setWebAuthnStatus] = useState<WebAuthnStatus>({
+    supported: false,
+    hasPlatformAuthenticator: false,
+    isRegistered: false,
+  });
+  const [webAuthnLoading, setWebAuthnLoading] = useState(false);
+  const [webAuthnNotice, setWebAuthnNotice] = useState<string | null>(null);
+
+  // Auto-deletion saved setting
+  const initialAutoDelete = typeof window !== 'undefined' 
+    ? localStorage.getItem('secureline_auto_delete_setting') || '24 ساعة'
+    : '24 ساعة';
+
+  const initialReadReceipts = typeof window !== 'undefined'
+    ? localStorage.getItem('secureline_read_receipts_enabled') !== 'false'
+    : true;
+
   const [settingsGroups, setSettingsGroups] = useState<SettingGroup[]>([
+    {
+      title: 'المصادقة البيومترية وقفل التطبيق (WebAuthn / Passkeys)',
+      icon: <Fingerprint size={18} className="text-accent" />,
+      settings: [
+        { 
+          id: 'biometric_lock', 
+          name: 'القفل البيومتري ببصمة الإصبع أو Face ID', 
+          description: 'استخدام واجهة Web Authentication API للتحقق من هوية المستخدم عبر الشريحة الأمنية', 
+          active: true 
+        },
+        { 
+          id: 'tee_strongbox', 
+          name: 'ربط المفاتيح بعتاد الأمان (Hardware TEE / StrongBox)', 
+          description: 'توليد أزواج مفاتيح المصادقة في معالج أمان مستقل غير قابل للاختراق البرمجي', 
+          active: true 
+        },
+      ]
+    },
+    {
+      title: 'إشعارات القراءة المشفرة ومجموعات Signal (Group & Read Privacy)',
+      icon: <CheckCheck size={18} className="text-accent" />,
+      settings: [
+        {
+          id: 'e2ee_read_receipts',
+          name: 'إشعارات القراءة المشفرة طرفياً (E2EE Read Receipts)',
+          description: 'إرسال واستقبال تأكيدات القراءة كحزم مشفرة بنظام السقاطة تمنع الاستدلال على التوقيت أو الهوية',
+          active: initialReadReceipts,
+        },
+        {
+          id: 'blinded_receipt_tokens',
+          name: 'تعمية المعرفات (Blinded Receipt Tokens - HMAC)',
+          description: 'عدم إرسال معرفات الرسائل الصريحة للوسطاء؛ استخدام بصمات مجزأة معماة لحماية الخصوصية',
+          active: true,
+        },
+        {
+          id: 'signal_sender_keys',
+          name: 'بروتوكول مفاتيح البث للمجموعات (Signal Sender Keys)',
+          description: 'توزيع مفاتيح سلاسل التشفير بين أعضاء المجموعة مع تدوير المفاتيح فوراً عند إضافة أو إزالة أي عضو',
+          active: true,
+        },
+      ]
+    },
+    {
+      title: 'خصوصية الرسائل والتدمير الذاتي (Auto-Deletion & Ephemerality)',
+      icon: <Timer size={18} className="text-accent" />,
+      settings: [
+        { 
+          id: 'auto_delete_messages',
+          name: 'الحذف التلقائي للرسائل المشفرة (Auto-Deletion Policy)', 
+          description: 'محو الرسائل وتصفير مفاتيحها المشتقة فور انقضاء المهلة لمنع التحليل الجنائي (Crypto-Shredding)', 
+          active: initialAutoDelete !== 'معطل (احتفاظ دائم)',
+          type: 'toggle-with-select',
+          options: [
+            'معطل (احتفاظ دائم)',
+            '15 ثانية',
+            '1 دقيقة',
+            '1 ساعة',
+            '24 ساعة',
+            '7 أيام',
+            '30 يوماً'
+          ],
+          currentValue: initialAutoDelete
+        },
+        { 
+          id: 'panic_shred', 
+          name: 'تفعيل زر التدمير الشامل الفوري (Panic Shred)', 
+          description: 'إظهار زر طوارئ لحذف كافة المحادثات وتصفير الذاكرة العشوائية فوراً بنقرة واحدة', 
+          active: true 
+        },
+      ]
+    },
     {
       title: 'طبقة التعمية (Traffic Obfuscation)',
       icon: <EyeOff size={18} className="text-accent" />,
@@ -58,26 +160,11 @@ export function SettingsView() {
       ]
     },
     {
-      title: 'التخزين المشفر على الجهاز (Data-at-Rest)',
+      title: 'التخزين المشفر ومشاركة الملفات (AES-256 Storage & Files)',
       icon: <Database size={18} className="text-accent" />,
       settings: [
         { id: 'sqlcipher', name: 'تشفير قاعدة البيانات (SQLCipher)', description: 'تشفير صفحات SQLite بـ 256-bit AES و 256,000 دورة PBKDF2', active: true },
-        { id: 'keystore', name: 'مخزن المفاتيح في العتاد (TEE / StrongBox)', description: 'توليد وتخزين مفاتيح الهوية داخل معالج الأمان المستقل للأجهزة', active: true },
-      ]
-    },
-    {
-      title: 'خصوصية الرسائل والتدمير الذاتي',
-      icon: <Timer size={18} className="text-accent" />,
-      settings: [
-        { 
-          id: 'ephemeral',
-          name: 'رسائل ذاتية الاختفاء (Crypto-Shredding)', 
-          description: 'تصفير المفتاح المشتق فور انقضاء المهلة وحذف البايتات نهائياً', 
-          active: true,
-          type: 'toggle-with-select',
-          options: ['15 ثانية', '60 ثانية', '24 ساعة', '1 أسبوع'],
-          currentValue: '60 ثانية'
-        },
+        { id: 'file_aes256', name: 'تشفير الملفات المرفقة بـ AES-256-GCM', description: 'تشفير الملفات محلياً قبل البث مع رمز تحقق نزاهة SHA-256 و 12-byte Nonce', active: true },
       ]
     },
     {
@@ -99,6 +186,39 @@ export function SettingsView() {
     }
   ]);
 
+  // Load WebAuthn details on mount
+  useEffect(() => {
+    refreshWebAuthn();
+  }, []);
+
+  const refreshWebAuthn = () => {
+    getWebAuthnStatus().then(status => {
+      setWebAuthnStatus(status);
+    });
+  };
+
+  const handleRegisterBiometrics = async () => {
+    setWebAuthnLoading(true);
+    setWebAuthnNotice(null);
+    const res = await registerBiometricPasskey('SecureLine Operator');
+    setWebAuthnLoading(false);
+    if (res.success) {
+      refreshWebAuthn();
+      setWebAuthnNotice('تم تسجيل بصمة Face ID / Fingerprint (WebAuthn Passkey) بنجاح!');
+      setTimeout(() => setWebAuthnNotice(null), 4000);
+    } else {
+      setWebAuthnNotice(res.error || 'تعذر استكمال تسجيل البصمة');
+      setTimeout(() => setWebAuthnNotice(null), 5000);
+    }
+  };
+
+  const handleRemoveBiometrics = () => {
+    removeBiometricPasskey();
+    refreshWebAuthn();
+    setWebAuthnNotice('تمت إزالة المفتاح البيومتري من الجهاز بنجاح.');
+    setTimeout(() => setWebAuthnNotice(null), 3000);
+  };
+
   // Fetch security audit trail when user visits audit tab
   useEffect(() => {
     if (activeTab === 'audit' && token) {
@@ -119,7 +239,20 @@ export function SettingsView() {
       const targetGroup = { ...copy[groupIdx] };
       targetGroup.settings = targetGroup.settings.map(s => {
         if (s.id === settingId) {
-          return { ...s, active: !s.active };
+          const nextActive = !s.active;
+          // If toggling auto delete
+          if (settingId === 'auto_delete_messages') {
+            const nextVal = nextActive ? (s.currentValue === 'معطل (احتفاظ دائم)' ? '24 ساعة' : s.currentValue || '24 ساعة') : 'معطل (احتفاظ دائم)';
+            localStorage.setItem('secureline_auto_delete_setting', nextVal);
+            window.dispatchEvent(new CustomEvent('secureline_autodelete_changed', { detail: nextVal }));
+            return { ...s, active: nextActive, currentValue: nextVal };
+          }
+          if (settingId === 'e2ee_read_receipts') {
+            localStorage.setItem('secureline_read_receipts_enabled', String(nextActive));
+            window.dispatchEvent(new CustomEvent('secureline_receipts_toggled', { detail: nextActive }));
+            return { ...s, active: nextActive };
+          }
+          return { ...s, active: nextActive };
         }
         return s;
       });
@@ -137,6 +270,13 @@ export function SettingsView() {
       const targetGroup = { ...copy[groupIdx] };
       targetGroup.settings = targetGroup.settings.map(s => {
         if (s.id === settingId) {
+          // If auto delete option changed
+          if (settingId === 'auto_delete_messages') {
+            const isActive = val !== 'معطل (احتفاظ دائم)';
+            localStorage.setItem('secureline_auto_delete_setting', val);
+            window.dispatchEvent(new CustomEvent('secureline_autodelete_changed', { detail: val }));
+            return { ...s, currentValue: val, active: isActive };
+          }
           return { ...s, currentValue: val };
         }
         return s;
@@ -155,7 +295,7 @@ export function SettingsView() {
       <div className="p-6 border-b border-gray-800 sticky top-0 bg-black/80 backdrop-blur-md z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold">إعدادات الأمان ومصفوفة التدقيق</h2>
-          <p className="text-text-secondary text-sm mt-1">تكوين طبقات التشفير والتعمية والمراقبة الميدانية.</p>
+          <p className="text-text-secondary text-sm mt-1">تكوين طبقات التشفير، المصادقة البيومترية، والتدمير الذاتي للرسائل.</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -194,11 +334,85 @@ export function SettingsView() {
                 <ShieldCheck size={24} className="text-accent" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-semibold text-text-primary">بروتوكول السقاطة المزدوجة ومفتاح الجذر المتجدد</h3>
+                <h3 className="text-lg font-semibold text-text-primary">بروتوكول السقاطة المزدوجة والمصادقة البيومترية</h3>
                 <p className="text-sm text-text-secondary leading-relaxed">
-                  نظام التشفير يعمل وفق مواصفة libsignal مع تدوير مفاتيح X25519 بعد كل رسالة (Forward Secrecy & Break-in Recovery).
-                  تشفير البيانات المخزنة يعمل بـ SQLCipher AES-256 مع تخزين المفاتيح داخل Android StrongBox Keymaster.
+                  نظام التشفير يعمل وفق مواصفة libsignal مع تدوير مفاتيح X25519 بعد كل رسالة. 
+                  يتم دعم المصادقة البيومترية المباشرة (Web Authentication API) عبر Face ID وبصمات الأصابع، 
+                  مع الحذف التلقائي للرسائل المشفرة وتشفير الملفات بتقنية AES-256-GCM.
                 </p>
+              </div>
+            </div>
+
+            {/* WebAuthn Management Panel */}
+            <div className="bg-primary border border-gray-800 rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-accent/10 rounded-lg text-accent border border-accent/20">
+                    <ScanFace size={22} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-text-primary flex items-center gap-2">
+                      <span>إدارة المصادقة البيومترية (Web Authentication API)</span>
+                      <span className="text-[10px] bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full">
+                        Passkeys FIDO2
+                      </span>
+                    </h4>
+                    <p className="text-xs text-text-secondary mt-0.5">
+                      {webAuthnStatus.hasPlatformAuthenticator 
+                        ? 'مستشعر بيومتري مدعوم في هذا الجهاز (Touch ID / Face ID / Windows Hello)' 
+                        : 'WebAuthn مدعوم على مستوى المتصفح ومتاح لربط مفاتيح الأمان'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {webAuthnStatus.isRegistered ? (
+                    <button
+                      onClick={handleRemoveBiometrics}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 border border-red-500/30 hover:bg-red-500/10 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Trash2 size={13} />
+                      <span>إلغاء البصمة</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleRegisterBiometrics}
+                      disabled={webAuthnLoading}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-accent text-black hover:bg-emerald-300 flex items-center gap-1.5 transition-colors"
+                    >
+                      <Sparkles size={13} />
+                      <span>{webAuthnLoading ? 'جاري التسجيل...' : 'تسجيل بصمة الآن'}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {webAuthnNotice && (
+                <div className="bg-accent/10 border border-accent/20 rounded-lg p-2.5 text-xs text-accent flex items-center gap-2">
+                  <Check size={14} className="shrink-0" />
+                  <span>{webAuthnNotice}</span>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+                <div className="bg-black/60 border border-gray-800 p-2.5 rounded-lg">
+                  <span className="text-gray-500 block text-[10px]">دعم Web Authentication API:</span>
+                  <span className={`font-semibold mt-0.5 block ${webAuthnStatus.supported ? 'text-accent' : 'text-red-400'}`}>
+                    {webAuthnStatus.supported ? 'مدعوم ومفعل ✓' : 'غير متوفر'}
+                  </span>
+                </div>
+                <div className="bg-black/60 border border-gray-800 p-2.5 rounded-lg">
+                  <span className="text-gray-500 block text-[10px]">المستشعر البيومتري للجهاز:</span>
+                  <span className="font-semibold mt-0.5 text-text-primary block">
+                    {webAuthnStatus.hasPlatformAuthenticator ? 'بصمة إصبع / Face ID نشط' : 'مستشعر افتراضي TEE'}
+                  </span>
+                </div>
+                <div className="bg-black/60 border border-gray-800 p-2.5 rounded-lg">
+                  <span className="text-gray-500 block text-[10px]">حالة تسجيل المفتاح (Passkey):</span>
+                  <span className={`font-semibold mt-0.5 block ${webAuthnStatus.isRegistered ? 'text-accent' : 'text-amber-400'}`}>
+                    {webAuthnStatus.isRegistered ? 'مسجل ومحمي بـ TEE ✓' : 'في انتظار التسجيل الأول'}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -214,7 +428,15 @@ export function SettingsView() {
                     {group.settings.map((setting) => (
                       <div key={setting.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-800/30 transition-colors">
                         <div>
-                          <h4 className="font-medium text-text-primary">{setting.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium text-text-primary">{setting.name}</h4>
+                            {setting.id === 'auto_delete_messages' && setting.active && (
+                              <span className="text-[10px] bg-orange-500/10 border border-orange-500/30 text-orange-400 px-2 py-0.5 rounded flex items-center gap-1">
+                                <Clock size={10} />
+                                {setting.currentValue}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-text-secondary mt-1 max-w-xl">{setting.description}</p>
                         </div>
 

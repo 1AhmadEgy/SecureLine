@@ -39,8 +39,10 @@ export function ArchitectureView() {
             <div className="bg-primary border border-gray-800 rounded-xl p-4">
               <h4 className="font-medium text-white mb-2 flex items-center gap-2"><Shield size={16} className="text-accent" /> بروتوكول التشفير</h4>
               <ul className="space-y-2 text-sm text-text-secondary list-disc list-inside">
-                <li><span className="text-white">libsignal:</span> التشفير الأساسي من طرف إلى طرف</li>
-                <li><span className="text-white">Signal-Android/iOS:</span> واجهة المستخدم والمنطق</li>
+                <li><span className="text-white">libsignal & Double Ratchet:</span> التشفير الثنائي من طرف إلى طرف</li>
+                <li><span className="text-white">Signal Sender Keys:</span> تشفير المحادثات الجماعية وتدوير المفاتيح التلقائي عند تبدل الأعضاء</li>
+                <li><span className="text-white">E2EE Read Receipts:</span> تأكيدات قراءة مشفرة طرفياً بـ Blinded Tokens لمنع تسريب البيانات الوصفية</li>
+                <li><span className="text-white">AES-256-GCM File Vault:</span> تشفير مرفقات الملفات محلياً قبل البث مع فحص SHA-256</li>
               </ul>
             </div>
             

@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.Base64;
+import android.util.Base64;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -38,8 +38,8 @@ public final class AuthenticationService {
         byte[] hash = derive(password, salt);
 
         prefs.edit()
-            .putString(userKey(normalized), Base64.getEncoder().encodeToString(salt))
-            .putString(hashKey(normalized), Base64.getEncoder().encodeToString(hash))
+            .putString(userKey(normalized), Base64.encodeToString(salt, Base64.NO_WRAP))
+            .putString(hashKey(normalized), Base64.encodeToString(hash, Base64.NO_WRAP))
             .apply();
         return true;
     }
@@ -52,8 +52,8 @@ public final class AuthenticationService {
             return false;
         }
 
-        byte[] salt = Base64.getDecoder().decode(saltEncoded);
-        byte[] expected = Base64.getDecoder().decode(hashEncoded);
+        byte[] salt = Base64.decode(saltEncoded, Base64.DEFAULT);
+        byte[] expected = Base64.decode(hashEncoded, Base64.DEFAULT);
         byte[] actual = derive(password, salt);
         boolean authenticated = MessageDigest.isEqual(expected, actual);
         if (authenticated) {

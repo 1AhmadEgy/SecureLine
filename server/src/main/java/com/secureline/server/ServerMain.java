@@ -25,7 +25,8 @@ public class ServerMain {
         startTime = System.currentTimeMillis();
 
         logger = ServerLogger.getInstance();
-        config = new ServerConfig("config.yml");
+        String configPath = System.getenv().getOrDefault("SECURELINE_CONFIG_FILE", "config.properties");
+        config = new ServerConfig(configPath);
         connectionManager = new ClientConnectionManager();
         messageRouter = new EncryptedMessageRouter();
         authHandler = new AuthenticationHandler();

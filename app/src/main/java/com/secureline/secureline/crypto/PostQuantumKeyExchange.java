@@ -1,48 +1,41 @@
 package com.secureline.secureline.crypto;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 
-public class PostQuantumKeyExchange {
-
-    private byte[] privateKey;
-    private byte[] publicKey;
-    private byte[] sharedSecret;
+/**
+ * PQC boundary.
+ *
+ * The previous implementation was XOR + SHA-256 over random values and was
+ * not a post-quantum key exchange. This class deliberately fails closed until
+ * the application is migrated to a vetted ML-KEM implementation.
+ */
+public final class PostQuantumKeyExchange {
 
     public PostQuantumKeyExchange() {
-        generateKeyPair();
-    }
-
-    private void generateKeyPair() {
-        privateKey = new byte[32];
-        publicKey = new byte[32];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(privateKey);
-        random.nextBytes(publicKey);
+        throw new UnsupportedOperationException(
+            "PQC is not enabled: migrate this call site to a vetted ML-KEM implementation."
+        );
     }
 
     public byte[] getPublicKey() {
-        return publicKey;
+        throw unsupported();
     }
 
     public void computeSharedSecret(byte[] peerPublicKey) {
-        sharedSecret = new byte[32];
-        for (int i = 0; i < 32; i++) {
-            sharedSecret[i] = (byte) (privateKey[i] ^ peerPublicKey[i]);
-        }
-        sharedSecret = HashUtils.sha256(sharedSecret);
+        throw unsupported();
     }
 
     public byte[] getSharedSecret() {
-        return sharedSecret;
+        throw unsupported();
     }
 
     public void clearKeys() {
-        Arrays.fill(privateKey, (byte) 0);
-        Arrays.fill(publicKey, (byte) 0);
-        Arrays.fill(sharedSecret, (byte) 0);
-        privateKey = null;
-        publicKey = null;
-        sharedSecret = null;
+        // No key material is created by this fail-closed implementation.
+    }
+
+    private static UnsupportedOperationException unsupported() {
+        return new UnsupportedOperationException(
+            "PQC is not enabled: migrate this call site to ML-KEM."
+        );
     }
 }

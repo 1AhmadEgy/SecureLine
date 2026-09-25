@@ -17,16 +17,18 @@ public class DatabaseManager extends SQLiteOpenHelper {
     }
 
     private static DatabaseManager instance;
+    private final Context appContext;
 
     public static synchronized DatabaseManager getInstance(Context context) {
         if (instance == null) {
-            instance = new DatabaseManager(context);
+            instance = new DatabaseManager(context.getApplicationContext());
         }
         return instance;
     }
 
     private DatabaseManager(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        this.appContext = context.getApplicationContext();
     }
 
     @Override
@@ -36,19 +38,11 @@ public class DatabaseManager extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS sessions");
-        db.execSQL("DROP TABLE IF EXISTS messages");
-        db.execSQL("DROP TABLE IF EXISTS contacts");
-        db.execSQL("DROP TABLE IF EXISTS keys");
-        db.execSQL("DROP TABLE IF EXISTS conversations");
-        db.execSQL("DROP TABLE IF EXISTS groups");
-        db.execSQL("DROP TABLE IF EXISTS group_members");
-        onCreate(db);
+        DatabaseMigration.migrate(db, oldVersion, newVersion);
     }
 
     public SQLiteDatabase getSecureDatabase() {
-        String key = KeyManager.getDatabaseKeyAsString();
-        if (key == null) return null;
+        String key = KeyManager.getDatabaseKeyAsString(appContext);
         return getWritableDatabase(key);
     }
 

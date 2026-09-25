@@ -57,11 +57,10 @@ dependencies {
     implementation 'org.json:json:20231013'
 
     // WebRTC
-    implementation 'org.webrtc:google-webrtc:1.0.32006'
+    implementation 'io.github.webrtc-sdk:android:150.7871.01'
 
     // Tor
-    implementation 'info.guardianproject:tor-android:0.4.7.8'
-    implementation 'org.torproject:tor-android:0.4.7.8'
+    implementation 'info.guardianproject:tor-android:0.4.9.12'
 
     // SQLCipher
     implementation 'net.zetetic:android-database-sqlcipher:4.5.4'

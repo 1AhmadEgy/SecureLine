@@ -25,7 +25,7 @@ public class ServerMain {
         startTime = System.currentTimeMillis();
 
         logger = ServerLogger.getInstance();
-        config = new ServerConfig("config.yml");
+        config = new ServerConfig();
         connectionManager = new ClientConnectionManager();
         messageRouter = new EncryptedMessageRouter();
         authHandler = new AuthenticationHandler();

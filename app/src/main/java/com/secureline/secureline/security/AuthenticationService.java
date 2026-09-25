@@ -1,51 +1,110 @@
 package com.secureline.secureline.security;
 
-import com.secureline.secureline.crypto.HashUtils;
+import android.content.Context;
+import android.content.SharedPreferences;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.spec.KeySpec;
+import java.util.Base64;
 
-public class AuthenticationService {
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
-    private final Map<String, byte[]> userCredentials;
-    private final Map<String, Long> lastAuthTimes;
+public final class AuthenticationService {
 
-    public AuthenticationService() {
-        userCredentials = new HashMap<>();
-        lastAuthTimes = new HashMap<>();
+    private static final String PREFS = "secureline_auth";
+    private static final String USERS = "users";
+    private static final int SALT_BYTES = 16;
+    private static final int ITERATIONS = 120_000;
+    private static final int KEY_BITS = 256;
+
+    private final SharedPreferences prefs;
+
+    public AuthenticationService(Context context) {
+        prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    public void registerUser(String username, String password) {
-        byte[] salt = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(salt);
+    public boolean registerUser(String username, String password) {
+        String normalized = normalize(username);
+        validatePassword(password);
+        if (prefs.contains(userKey(normalized))) {
+            return false;
+        }
 
-        byte[] passwordHash = HashUtils.sha256(
-            java.util.Arrays.copyOf(salt, salt.length + password.length())
-        );
-        userCredentials.put(username, passwordHash);
+        byte[] salt = new byte[SALT_BYTES];
+        new SecureRandom().nextBytes(salt);
+        byte[] hash = derive(password, salt);
+
+        prefs.edit()
+            .putString(userKey(normalized), Base64.getEncoder().encodeToString(salt))
+            .putString(hashKey(normalized), Base64.getEncoder().encodeToString(hash))
+            .apply();
+        return true;
     }
 
     public boolean authenticateUser(String username, String password) {
-        byte[] storedHash = userCredentials.get(username);
-        if (storedHash == null) return false;
+        String normalized = normalize(username);
+        String saltEncoded = prefs.getString(userKey(normalized), null);
+        String hashEncoded = prefs.getString(hashKey(normalized), null);
+        if (saltEncoded == null || hashEncoded == null) {
+            return false;
+        }
 
-        byte[] computedHash = HashUtils.sha256(password.getBytes());
-        boolean authenticated = java.security.MessageDigest.isEqual(storedHash, computedHash);
-
+        byte[] salt = Base64.getDecoder().decode(saltEncoded);
+        byte[] expected = Base64.getDecoder().decode(hashEncoded);
+        byte[] actual = derive(password, salt);
+        boolean authenticated = MessageDigest.isEqual(expected, actual);
         if (authenticated) {
-            lastAuthTimes.put(username, System.currentTimeMillis());
+            prefs.edit().putLong(lastAuthKey(normalized), System.currentTimeMillis()).apply();
         }
         return authenticated;
     }
 
     public long getLastAuthTime(String username) {
-        Long time = lastAuthTimes.get(username);
-        return time != null ? time : -1;
+        return prefs.getLong(lastAuthKey(normalize(username)), -1L);
     }
 
     public void logoutUser(String username) {
-        lastAuthTimes.remove(username);
+        prefs.edit().remove(lastAuthKey(normalize(username))).apply();
+    }
+
+    private static byte[] derive(String password, byte[] salt) {
+        try {
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_BITS);
+            return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).getEncoded();
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to derive password verifier", e);
+        }
+    }
+
+    private static String normalize(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username is required");
+        }
+        String value = username.trim();
+        if (value.length() < 3 || value.length() > 64) {
+            throw new IllegalArgumentException("Username must be 3-64 characters");
+        }
+        return value.toLowerCase(java.util.Locale.ROOT);
+    }
+
+    private static void validatePassword(String password) {
+        if (password == null || password.length() < 8 || password.length() > 256) {
+            throw new IllegalArgumentException("Password must be 8-256 characters");
+        }
+    }
+
+    private static String userKey(String username) {
+        return USERS + "_salt_" + username;
+    }
+
+    private static String hashKey(String username) {
+        return USERS + "_hash_" + username;
+    }
+
+    private static String lastAuthKey(String username) {
+        return USERS + "_last_auth_" + username;
     }
 }

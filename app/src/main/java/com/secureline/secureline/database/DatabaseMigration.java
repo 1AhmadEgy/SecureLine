@@ -27,6 +27,11 @@ public final class DatabaseMigration {
             version = 4;
         }
 
+        if (version < 5 && newVersion >= 5) {
+            migrateV4toV5(db);
+            version = 5;
+        }
+
         if (version < newVersion) {
             createIndexes(db);
         }
@@ -53,6 +58,13 @@ public final class DatabaseMigration {
             }
             return false;
         }
+    }
+
+    private static void migrateV4toV5(SQLiteDatabase db) {
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_IDENTITY);
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_PRE_KEYS);
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_SIGNED_PRE_KEY);
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_pre_keys_id ON signal_pre_keys(pre_key_id)");
     }
 
     private static void createIndexes(SQLiteDatabase db) {

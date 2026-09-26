@@ -1,5 +1,9 @@
 package com.secureline.secureline.crypto;
 
+import android.content.Context;
+
+import com.secureline.secureline.database.DatabaseManager;
+
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.SessionBuilder;
 import org.whispersystems.libsignal.SessionCipher;
@@ -31,11 +35,37 @@ public final class SignalProtocolManager {
         this.registrationId = registrationId;
     }
 
+    /**
+     * Creates a manager backed by the app's Keystore-protected SQLCipher database.
+     */
+    public static SignalProtocolManager create(Context context) {
+        if (context == null) {
+            throw new IllegalArgumentException("Context is required");
+        }
+        IdentityManager identity = new IdentityManager(context);
+        SqlCipherSignalProtocolStore store = new SqlCipherSignalProtocolStore(
+                DatabaseManager.getInstance(context),
+                identity.getIdentityKeyPair(),
+                identity.getRegistrationId());
+        return new SignalProtocolManager(
+                store,
+                identity.getIdentityKeyPair(),
+                identity.getRegistrationId());
+    }
+
     public byte[] encryptMessage(String remoteAddress, byte[] plaintext) {
-        requirePayload(remoteAddress, plaintext);
+        return encryptMessage(remoteAddress, 1, plaintext);
+    }
+
+    public byte[] encryptMessage(
+            String remoteAddress,
+            int deviceId,
+            byte[] plaintext) {
+        requirePayload(remoteAddress, deviceId, plaintext);
         try {
-            SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
-            SessionCipher cipher = new SessionCipher(protocolStore, address);
+            SessionCipher cipher = new SessionCipher(
+                    protocolStore,
+                    new SignalProtocolAddress(remoteAddress, deviceId));
             CiphertextMessage message = cipher.encrypt(plaintext);
             return message.serialize();
         } catch (Exception e) {
@@ -44,28 +74,42 @@ public final class SignalProtocolManager {
     }
 
     public byte[] decryptMessage(String remoteAddress, byte[] ciphertext) {
-        requirePayload(remoteAddress, ciphertext);
-        try {
-            SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
+        return decryptMessage(remoteAddress, 1, ciphertext);
+    }
 
-            try {
-                return new SessionCipher(protocolStore, address)
-                        .decrypt(new PreKeySignalMessage(ciphertext));
-            } catch (Exception ignored) {
-                return new SessionCipher(protocolStore, address)
-                        .decrypt(new SignalMessage(ciphertext));
+    public byte[] decryptMessage(
+            String remoteAddress,
+            int deviceId,
+            byte[] ciphertext) {
+        requirePayload(remoteAddress, deviceId, ciphertext);
+        try {
+            SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, deviceId);
+            SessionCipher cipher = new SessionCipher(protocolStore, address);
+
+            if (ciphertext.length > 0 &&
+                    (ciphertext[0] & 0xFF) == CiphertextMessage.PREKEY_TYPE) {
+                return cipher.decrypt(new PreKeySignalMessage(ciphertext));
             }
+            return cipher.decrypt(new SignalMessage(ciphertext));
         } catch (Exception e) {
             throw new SecurityException("Signal decryption failed", e);
         }
     }
 
     public void buildSession(String remoteAddress, PreKeyBundle preKeyBundle) {
-        if (remoteAddress == null || remoteAddress.isBlank() || preKeyBundle == null) {
-            throw new IllegalArgumentException("Remote address and pre-key bundle are required");
+        buildSession(remoteAddress, 1, preKeyBundle);
+    }
+
+    public void buildSession(
+            String remoteAddress,
+            int deviceId,
+            PreKeyBundle preKeyBundle) {
+        if (remoteAddress == null || remoteAddress.isBlank() ||
+                deviceId <= 0 || preKeyBundle == null) {
+            throw new IllegalArgumentException("Remote address, device and pre-key bundle are required");
         }
         try {
-            SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, 1);
+            SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, deviceId);
             new SessionBuilder(protocolStore, address).process(preKeyBundle);
         } catch (Exception e) {
             throw new IllegalStateException("Signal session establishment failed", e);
@@ -80,9 +124,16 @@ public final class SignalProtocolManager {
         return registrationId;
     }
 
-    private static void requirePayload(String address, byte[] payload) {
+    public SignalProtocolStore getProtocolStore() {
+        return protocolStore;
+    }
+
+    private static void requirePayload(String address, int deviceId, byte[] payload) {
         if (address == null || address.isBlank()) {
             throw new IllegalArgumentException("Remote address is required");
+        }
+        if (deviceId <= 0) {
+            throw new IllegalArgumentException("Device id must be positive");
         }
         if (payload == null || payload.length == 0) {
             throw new IllegalArgumentException("Payload is required");

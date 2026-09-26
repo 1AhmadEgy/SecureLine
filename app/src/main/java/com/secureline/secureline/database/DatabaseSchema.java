@@ -62,6 +62,11 @@ public class DatabaseSchema {
         "updated_at INTEGER NOT NULL, " +
         "PRIMARY KEY (address_name, device_id))";
 
+    public static final String CREATE_TABLE_SIGNAL_SIGNED_PRE_KEYS =
+        "CREATE TABLE IF NOT EXISTS signal_signed_pre_keys (" +
+        "pre_key_id INTEGER PRIMARY KEY, " +
+        "record TEXT NOT NULL)";
+
     public static final String CREATE_TABLE_KEYS =
         "CREATE TABLE IF NOT EXISTS keys (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +

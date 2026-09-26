@@ -37,6 +37,11 @@ public final class DatabaseMigration {
             version = 6;
         }
 
+        if (version < 7 && newVersion >= 7) {
+            migrateV6toV7(db);
+            version = 7;
+        }
+
         if (version < newVersion) {
             createIndexes(db);
         }
@@ -76,7 +81,13 @@ public final class DatabaseMigration {
         db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_IDENTITIES);
         db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_SESSIONS);
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_sessions_name ON signal_sessions(address_name)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_signed_pre_keys_id ON signal_signed_pre_keys(pre_key_id)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_identities_name ON signal_identities(address_name)");
+    }
+
+    private static void migrateV6toV7(SQLiteDatabase db) {
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_SIGNED_PRE_KEYS);
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_signed_pre_keys_id ON signal_signed_pre_keys(pre_key_id)");
     }
 
     private static void createIndexes(SQLiteDatabase db) {

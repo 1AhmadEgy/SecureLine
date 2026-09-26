@@ -6,7 +6,13 @@ public class DatabaseSchema {
         "CREATE TABLE IF NOT EXISTS sessions (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
         "session_id TEXT UNIQUE NOT NULL, " +
-        "created_at INTEGER NOT NULL)";
+        "created_at INTEGER NOT NULL, " +
+        "identity_key_pair BLOB, " +
+        "registration_id INTEGER, " +
+        "pre_key_id INTEGER DEFAULT 0, " +
+        "pre_key_record BLOB, " +
+        "signed_pre_key_id INTEGER DEFAULT 0, " +
+        "signed_pre_key_record BLOB)";
 
     public static final String CREATE_TABLE_MESSAGES =
         "CREATE TABLE IF NOT EXISTS messages (" +

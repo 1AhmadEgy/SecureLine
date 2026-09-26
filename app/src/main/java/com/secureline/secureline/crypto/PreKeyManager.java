@@ -1,62 +1,81 @@
 package com.secureline.secureline.crypto;
 
+import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class PreKeyManager {
+public final class PreKeyManager {
 
-    private final List<PreKeyRecord> preKeys;
-    private SignedPreKeyRecord signedPreKey;
+    private final IdentityKeyPair identityKeyPair;
+    private final SqlCipherSignalProtocolStore protocolStore;
 
-    public PreKeyManager() {
-        preKeys = new ArrayList<>();
+    public PreKeyManager(
+            IdentityKeyPair identityKeyPair,
+            SqlCipherSignalProtocolStore protocolStore) {
+        if (identityKeyPair == null || protocolStore == null) {
+            throw new IllegalArgumentException("Identity and Signal store are required");
+        }
+        this.identityKeyPair = identityKeyPair;
+        this.protocolStore = protocolStore;
     }
 
-    public void generatePreKeys(int startId, int count) {
-        for (int i = startId; i < startId + count; i++) {
-            PreKeyRecord record = KeyHelper.generatePreKeys(i, 1).get(0);
-            preKeys.add(record);
+    public synchronized void generatePreKeys(int startId, int count) {
+        if (startId < 1 || count < 1 || count > 1000) {
+            throw new IllegalArgumentException("Invalid pre-key range");
+        }
+
+        List<PreKeyRecord> generated = KeyHelper.generatePreKeys(startId, count);
+        for (PreKeyRecord record : generated) {
+            protocolStore.storePreKey(record.getId(), record);
         }
     }
 
-    public void generateSignedPreKey(int id) {
-        signedPreKey = KeyHelper.generateSignedPreKey(id, 
-            IdentityManagerHolder.getIdentityKeyPair());
+    public synchronized void generateSignedPreKey(int id) {
+        if (id < 1) {
+            throw new IllegalArgumentException("Invalid signed pre-key id");
+        }
+        SignedPreKeyRecord record = KeyHelper.generateSignedPreKey(id, identityKeyPair);
+        protocolStore.storeSignedPreKey(id, record);
     }
 
-    public PreKeyRecord getPreKey(int id) {
-        for (PreKeyRecord record : preKeys) {
-            if (record.getId() == id) {
-                return record;
+    public synchronized PreKeyRecord getPreKey(int id) {
+        if (id < 1 || !protocolStore.containsPreKey(id)) {
+            return null;
+        }
+        try {
+            return protocolStore.loadPreKey(id);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to load Signal pre-key", e);
+        }
+    }
+
+    public synchronized SignedPreKeyRecord getSignedPreKey() {
+        List<SignedPreKeyRecord> records = protocolStore.loadSignedPreKeys();
+        return records.isEmpty() ? null : records.get(records.size() - 1);
+    }
+
+    public synchronized List<PreKeyRecord> getAllPreKeys() {
+        List<PreKeyRecord> result = new ArrayList<>();
+        for (int id = 1; id <= 1000; id++) {
+            if (protocolStore.containsPreKey(id)) {
+                try {
+                    result.add(protocolStore.loadPreKey(id));
+                } catch (Exception e) {
+                    throw new IllegalStateException("Unable to load Signal pre-key", e);
+                }
             }
         }
-        return null;
+        return Collections.unmodifiableList(result);
     }
 
-    public SignedPreKeyRecord getSignedPreKey() {
-        return signedPreKey;
-    }
-
-    public List<PreKeyRecord> getAllPreKeys() {
-        return preKeys;
-    }
-
-    public void removePreKey(int id) {
-        preKeys.removeIf(record -> record.getId() == id);
-    }
-}
-
-class IdentityManagerHolder {
-    private static IdentityManager instance;
-
-    public static org.whispersystems.libsignal.IdentityKeyPair getIdentityKeyPair() {
-        if (instance == null) {
-            instance = new IdentityManager();
+    public synchronized void removePreKey(int id) {
+        if (id > 0) {
+            protocolStore.removePreKey(id);
         }
-        return instance.getIdentityKeyPair();
     }
 }

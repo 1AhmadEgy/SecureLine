@@ -12,20 +12,16 @@ public class DatabaseManager {
     private final String password;
 
     public DatabaseManager(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
+        this.url = require(url, "database URL");
+        this.username = require(username, "database username");
+        this.password = require(password, "database password");
     }
 
-    public Connection getConnection() {
-        try {
-            return DriverManager.getConnection(url, username, password);
-        } catch (Exception e) {
-            return null;
-        }
+    public Connection getConnection() throws java.sql.SQLException {
+        return DriverManager.getConnection(url, username, password);
     }
 
-    public boolean storeEncryptedMessage(String id, String senderId, 
+    public boolean storeEncryptedMessage(String id, String senderId,
                                           String recipientId, byte[] encryptedBody) {
         String sql = "INSERT INTO messages (id, sender_id, recipient_id, encrypted_body) " +
                      "VALUES (?, ?, ?, ?)";
@@ -37,7 +33,7 @@ public class DatabaseManager {
             stmt.setString(3, recipientId);
             stmt.setBytes(4, encryptedBody);
             return stmt.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (java.sql.SQLException e) {
             return false;
         }
     }
@@ -49,12 +45,13 @@ public class DatabaseManager {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, recipientId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getBytes("encrypted_body");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBytes("encrypted_body");
+                }
+                return null;
             }
-            return null;
-        } catch (Exception e) {
+        } catch (java.sql.SQLException e) {
             return null;
         }
     }
@@ -65,8 +62,15 @@ public class DatabaseManager {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, id);
             return stmt.executeUpdate() > 0;
-        } catch (Exception e) {
+        } catch (java.sql.SQLException e) {
             return false;
         }
+    }
+
+    private static String require(String value, String name) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
+        return value;
     }
 }

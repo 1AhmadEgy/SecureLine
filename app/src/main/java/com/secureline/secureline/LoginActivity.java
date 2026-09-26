@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         btnRegister = findViewById(R.id.btn_register);
 
-        authService = new AuthenticationService();
+        authService = new AuthenticationService(this);
 
         btnLogin.setOnClickListener(v -> performLogin());
         btnRegister.setOnClickListener(v -> {

@@ -28,6 +28,45 @@ public class DatabaseSchema {
         "is_verified INTEGER DEFAULT 0, " +
         "is_blocked INTEGER DEFAULT 0)";
 
+    public static final String CREATE_TABLE_SIGNAL_IDENTITY =
+        "CREATE TABLE IF NOT EXISTS signal_identity (" +
+        "id INTEGER PRIMARY KEY CHECK (id = 1), " +
+        "identity_key_pair TEXT NOT NULL, " +
+        "registration_id INTEGER NOT NULL)";
+
+    public static final String CREATE_TABLE_SIGNAL_PRE_KEYS =
+        "CREATE TABLE IF NOT EXISTS signal_pre_keys (" +
+        "pre_key_id INTEGER PRIMARY KEY, " +
+        "record TEXT NOT NULL)";
+
+    public static final String CREATE_TABLE_SIGNAL_SIGNED_PRE_KEY =
+        "CREATE TABLE IF NOT EXISTS signal_signed_pre_key (" +
+        "id INTEGER PRIMARY KEY CHECK (id = 1), " +
+        "pre_key_id INTEGER NOT NULL, " +
+        "record TEXT NOT NULL)";
+
+    public static final String CREATE_TABLE_SIGNAL_IDENTITIES =
+        "CREATE TABLE IF NOT EXISTS signal_identities (" +
+        "address_name TEXT NOT NULL, " +
+        "device_id INTEGER NOT NULL, " +
+        "identity_key TEXT NOT NULL, " +
+        "created_at INTEGER NOT NULL, " +
+        "updated_at INTEGER NOT NULL, " +
+        "PRIMARY KEY (address_name, device_id))";
+
+    public static final String CREATE_TABLE_SIGNAL_SESSIONS =
+        "CREATE TABLE IF NOT EXISTS signal_sessions (" +
+        "address_name TEXT NOT NULL, " +
+        "device_id INTEGER NOT NULL, " +
+        "record TEXT NOT NULL, " +
+        "updated_at INTEGER NOT NULL, " +
+        "PRIMARY KEY (address_name, device_id))";
+
+    public static final String CREATE_TABLE_SIGNAL_SIGNED_PRE_KEYS =
+        "CREATE TABLE IF NOT EXISTS signal_signed_pre_keys (" +
+        "pre_key_id INTEGER PRIMARY KEY, " +
+        "record TEXT NOT NULL)";
+
     public static final String CREATE_TABLE_KEYS =
         "CREATE TABLE IF NOT EXISTS keys (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +

@@ -8,16 +8,16 @@ database:
   driverClass: org.postgresql.Driver
   url: jdbc:postgresql://localhost:5432/secureline_db
   user: secureline
-  password: SecureLine2024!
+  password: CHANGE_ME
 
 redis:
   url: redis://localhost:6379
 
 security:
-  zkSecret: "your-super-secret-zookeeper-key"
-  unidentifiedAccessEnabled: true
+  zkSecret: CHANGE_ME_TO_A_LONG_RANDOM_SECRET
+  unidentifiedAccessEnabled: false
 
 logging:
   level: INFO
   loggers:
-    org.whispersystems: DEBUG
+    org.whispersystems: WARN

@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.secureline.secureline.security.AuthenticationService;
-import com.secureline.secureline.security.IdentityManager;
+import com.secureline.secureline.crypto.IdentityManager;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -56,13 +56,17 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        AuthenticationService authService = new AuthenticationService();
-        authService.registerUser(username, password);
+        AuthenticationService authService = new AuthenticationService(this);
+        boolean created = authService.registerUser(username, password);
+        if (!created) {
+            Toast.makeText(this, "اسم المستخدم مستخدم بالفعل", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        IdentityManager identityManager = new IdentityManager();
+        IdentityManager identityManager = new IdentityManager(getApplicationContext());
         String fingerprint = identityManager.getFingerprint();
 
-        Toast.makeText(this, "تم إنشاء الحساب بنجاح\nبصمتك: " + fingerprint, 
+        Toast.makeText(this, "تم إنشاء الحساب بنجاح\nبصمتك: " + fingerprint,
             Toast.LENGTH_LONG).show();
 
         startActivity(new android.content.Intent(this, LoginActivity.class));

@@ -10,7 +10,7 @@ import net.zetetic.database.sqlcipher.SQLiteOpenHelper;
 public class DatabaseManager extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "secureline.db";
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 5;
 
     static {
         System.loadLibrary("sqlcipher");

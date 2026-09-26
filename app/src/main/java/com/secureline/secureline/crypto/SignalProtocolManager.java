@@ -86,11 +86,11 @@ public final class SignalProtocolManager {
             SignalProtocolAddress address = new SignalProtocolAddress(remoteAddress, deviceId);
             SessionCipher cipher = new SessionCipher(protocolStore, address);
 
-            if (ciphertext.length > 0 &&
-                    (ciphertext[0] & 0xFF) == CiphertextMessage.PREKEY_TYPE) {
+            try {
                 return cipher.decrypt(new PreKeySignalMessage(ciphertext));
+            } catch (Exception preKeyParseOrDecryptFailure) {
+                return cipher.decrypt(new SignalMessage(ciphertext));
             }
-            return cipher.decrypt(new SignalMessage(ciphertext));
         } catch (Exception e) {
             throw new SecurityException("Signal decryption failed", e);
         }

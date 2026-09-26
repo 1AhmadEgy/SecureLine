@@ -45,6 +45,23 @@ public class DatabaseSchema {
         "pre_key_id INTEGER NOT NULL, " +
         "record TEXT NOT NULL)";
 
+    public static final String CREATE_TABLE_SIGNAL_IDENTITIES =
+        "CREATE TABLE IF NOT EXISTS signal_identities (" +
+        "address_name TEXT NOT NULL, " +
+        "device_id INTEGER NOT NULL, " +
+        "identity_key TEXT NOT NULL, " +
+        "created_at INTEGER NOT NULL, " +
+        "updated_at INTEGER NOT NULL, " +
+        "PRIMARY KEY (address_name, device_id))";
+
+    public static final String CREATE_TABLE_SIGNAL_SESSIONS =
+        "CREATE TABLE IF NOT EXISTS signal_sessions (" +
+        "address_name TEXT NOT NULL, " +
+        "device_id INTEGER NOT NULL, " +
+        "record TEXT NOT NULL, " +
+        "updated_at INTEGER NOT NULL, " +
+        "PRIMARY KEY (address_name, device_id))";
+
     public static final String CREATE_TABLE_KEYS =
         "CREATE TABLE IF NOT EXISTS keys (" +
         "id INTEGER PRIMARY KEY AUTOINCREMENT, " +

@@ -111,7 +111,7 @@ public final class SqlCipherSignalProtocolStore
                 "signal_identities",
                 null,
                 values,
-                SQLiteDatabase.CONFLICT_REPLACE);
+                android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE);
         if (result == -1) {
             throw new IllegalStateException("Unable to persist remote Signal identity");
         }
@@ -159,7 +159,7 @@ public final class SqlCipherSignalProtocolStore
         values.put("pre_key_id", preKeyId);
         values.put("record", encode(record.serialize()));
         if (db().insertWithOnConflict(
-                "signal_pre_keys", null, values, SQLiteDatabase.CONFLICT_REPLACE) == -1) {
+                "signal_pre_keys", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE) == -1) {
             throw new IllegalStateException("Unable to persist Signal pre-key");
         }
     }
@@ -210,7 +210,7 @@ public final class SqlCipherSignalProtocolStore
         values.put("updated_at", System.currentTimeMillis());
 
         if (db().insertWithOnConflict(
-                "signal_sessions", null, values, SQLiteDatabase.CONFLICT_REPLACE) == -1) {
+                "signal_sessions", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE) == -1) {
             throw new IllegalStateException("Unable to persist Signal session");
         }
     }
@@ -306,7 +306,7 @@ public final class SqlCipherSignalProtocolStore
         values.put("pre_key_id", signedPreKeyId);
         values.put("record", encode(record.serialize()));
         if (db().insertWithOnConflict(
-                "signal_signed_pre_keys", null, values, SQLiteDatabase.CONFLICT_REPLACE) == -1) {
+                "signal_signed_pre_keys", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE) == -1) {
             throw new IllegalStateException("Unable to persist Signal signed pre-key");
         }
     }

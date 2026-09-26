@@ -32,6 +32,11 @@ public final class DatabaseMigration {
             version = 5;
         }
 
+        if (version < 6 && newVersion >= 6) {
+            migrateV5toV6(db);
+            version = 6;
+        }
+
         if (version < newVersion) {
             createIndexes(db);
         }
@@ -67,12 +72,22 @@ public final class DatabaseMigration {
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_pre_keys_id ON signal_pre_keys(pre_key_id)");
     }
 
+    private static void migrateV5toV6(SQLiteDatabase db) {
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_IDENTITIES);
+        db.execSQL(DatabaseSchema.CREATE_TABLE_SIGNAL_SESSIONS);
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_sessions_name ON signal_sessions(address_name)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_identities_name ON signal_identities(address_name)");
+    }
+
     private static void createIndexes(SQLiteDatabase db) {
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_uuid)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_contacts_uuid ON contacts(contact_uuid)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(display_name)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_keys_alias ON keys(key_alias)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_pre_keys_id ON signal_pre_keys(pre_key_id)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_sessions_name ON signal_sessions(address_name)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_signal_identities_name ON signal_identities(address_name)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_conversations_uuid ON conversations(conversation_uuid)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_groups_uuid ON groups(group_uuid)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_group_members_group ON group_members(group_uuid)");

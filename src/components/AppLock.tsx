@@ -11,9 +11,10 @@ import {
 
 interface AppLockProps {
   onUnlock: (isDecoy?: boolean) => void;
+  lockReason?: string | null;
 }
 
-export function AppLock({ onUnlock }: AppLockProps) {
+export function AppLock({ onUnlock, lockReason }: AppLockProps) {
   const [authenticating, setAuthenticating] = useState(false);
   const [mode, setMode] = useState<'biometric' | 'pin'>('biometric');
   const [pin, setPin] = useState('');
@@ -158,6 +159,14 @@ export function AppLock({ onUnlock }: AppLockProps) {
               : 'WebAuthn API متوفر • تشفير TEE'}
           </span>
         </div>
+
+        {/* Auto-Lock / Trigger Reason Notice */}
+        {lockReason && (
+          <div className="w-full bg-amber-950/50 border border-amber-800/70 rounded-xl p-3 text-xs text-amber-300 flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1">
+            <ShieldAlert size={16} className="text-amber-400 shrink-0 mt-0.5" />
+            <span className="leading-relaxed">{lockReason}</span>
+          </div>
+        )}
 
         {/* Error / Status Alerts */}
         {errorMessage && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { ChatView } from './components/ChatView';
 import { CallsView } from './components/CallsView';
@@ -10,23 +10,136 @@ import { AppLock } from './components/AppLock';
 import type { ViewMode } from './types';
 import { ShieldAlert, Lock } from 'lucide-react';
 
+function parseAutoLockMs(policy: string): number {
+  if (policy === 'معطل') return -1;
+  if (policy.includes('فورياً')) return 0;
+  if (policy.includes('30 ثانية')) return 30 * 1000;
+  if (policy.includes('1 دقيقة')) return 60 * 1000;
+  if (policy.includes('5 دقائق')) return 5 * 60 * 1000;
+  return 30 * 1000; // Default 30s
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewMode>('chat');
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isDecoySession, setIsDecoySession] = useState(false);
+  const [lockReason, setLockReason] = useState<string | null>(null);
+
+  // Auto-lock policy state (configurable via Settings, defaults to 30 seconds on tab away)
+  const [autoLockPolicy, setAutoLockPolicy] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('secureline_autolock_policy') || 'بعد 30 ثانية من مغادرة التبويب (افتراضي)';
+    }
+    return 'بعد 30 ثانية من مغادرة التبويب (افتراضي)';
+  });
 
   const handleUnlock = (decoy?: boolean) => {
     setIsDecoySession(!!decoy);
+    setLockReason(null);
     setIsUnlocked(true);
   };
 
-  const handleLockApp = () => {
+  const handleLockApp = (reason?: string) => {
+    setLockReason(reason || null);
     setIsUnlocked(false);
     setIsDecoySession(false);
   };
 
+  // Sync auto-lock policy changes from SettingsView
+  useEffect(() => {
+    const handlePolicyChange = (e: Event) => {
+      const custom = e as CustomEvent<string>;
+      if (custom.detail) {
+        setAutoLockPolicy(custom.detail);
+      }
+    };
+
+    window.addEventListener('secureline_autolock_changed', handlePolicyChange);
+    return () => window.removeEventListener('secureline_autolock_changed', handlePolicyChange);
+  }, []);
+
+  // Automatic Lock Screen: Tab Blur / Window Switching Away (30 Seconds Threshold)
+  useEffect(() => {
+    if (!isUnlocked) return;
+
+    const timeoutMs = parseAutoLockMs(autoLockPolicy);
+    if (timeoutMs < 0) return; // Disabled
+
+    let timer: NodeJS.Timeout | null = null;
+    let awayTimestamp: number | null = null;
+
+    const triggerAutoLock = (reason: string) => {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      awayTimestamp = null;
+      setLockReason(reason);
+      setIsUnlocked(false);
+      setIsDecoySession(false);
+    };
+
+    const handleAway = () => {
+      // Immediate lock on blur / loss of tab focus
+      if (timeoutMs === 0) {
+        triggerAutoLock('تم قفل التطبيق فورياً لفقدان تركيز نافذة المتصفح (Tab Lost Focus).');
+        return;
+      }
+
+      if (!awayTimestamp) {
+        awayTimestamp = Date.now();
+      }
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        triggerAutoLock('تم قفل التطبيق تلقائياً لمغادرة التبويب لأكثر من 30 ثانية (Auto-Lock on Tab Away).');
+      }, timeoutMs);
+    };
+
+    const handleReturn = () => {
+      if (awayTimestamp) {
+        const elapsed = Date.now() - awayTimestamp;
+        if (elapsed >= timeoutMs) {
+          triggerAutoLock('تم قفل التطبيق تلقائياً بعد مغادرة التبويب لأكثر من 30 ثانية.');
+          return;
+        }
+      }
+
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      awayTimestamp = null;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden || document.visibilityState === 'hidden') {
+        handleAway();
+      } else {
+        handleReturn();
+      }
+    };
+
+    const handleBlur = () => {
+      handleAway();
+    };
+
+    const handleFocus = () => {
+      handleReturn();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [isUnlocked, autoLockPolicy]);
+
   if (!isUnlocked) {
-    return <AppLock onUnlock={handleUnlock} />;
+    return <AppLock onUnlock={handleUnlock} lockReason={lockReason} />;
   }
 
   return (

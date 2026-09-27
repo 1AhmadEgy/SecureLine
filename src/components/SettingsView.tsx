@@ -75,6 +75,10 @@ export function SettingsView() {
     ? localStorage.getItem('secureline_typing_enabled') !== 'false'
     : true;
 
+  const initialAutoLockPolicy = typeof window !== 'undefined'
+    ? localStorage.getItem('secureline_autolock_policy') || 'بعد 30 ثانية من مغادرة التبويب (افتراضي)'
+    : 'بعد 30 ثانية من مغادرة التبويب (افتراضي)';
+
   const [settingsGroups, setSettingsGroups] = useState<SettingGroup[]>([
     {
       title: 'المصادقة البيومترية وقفل التطبيق (WebAuthn / Passkeys)',
@@ -91,6 +95,21 @@ export function SettingsView() {
           name: 'ربط المفاتيح بعتاد الأمان (Hardware TEE / StrongBox)', 
           description: 'توليد أزواج مفاتيح المصادقة في معالج أمان مستقل غير قابل للاختراق البرمجي', 
           active: true 
+        },
+        {
+          id: 'autolock_tab_blur',
+          name: 'القفل التلقائي عند مغادرة التبويب (Auto-lock on Tab Blur / Away)',
+          description: 'تفعيل شاشة القفل تلقائياً عند فقدان تركيز التبويب أو مغادرة التطبيق لأكثر من 30 ثانية لحماية الجلسة',
+          active: initialAutoLockPolicy !== 'معطل',
+          type: 'toggle-with-select',
+          options: [
+            'معطل',
+            'بعد 30 ثانية من مغادرة التبويب (افتراضي)',
+            'فورياً عند فقدان تركيز التبويب',
+            'بعد 1 دقيقة من مغادرة التبويب',
+            'بعد 5 دقائق من مغادرة التبويب'
+          ],
+          currentValue: initialAutoLockPolicy
         },
       ]
     },
@@ -267,6 +286,14 @@ export function SettingsView() {
             window.dispatchEvent(new CustomEvent('secureline_typing_toggled', { detail: nextActive }));
             return { ...s, active: nextActive };
           }
+          if (settingId === 'autolock_tab_blur') {
+            const nextVal = nextActive 
+              ? (s.currentValue === 'معطل' ? 'بعد 30 ثانية من مغادرة التبويب (افتراضي)' : s.currentValue || 'بعد 30 ثانية من مغادرة التبويب (افتراضي)') 
+              : 'معطل';
+            localStorage.setItem('secureline_autolock_policy', nextVal);
+            window.dispatchEvent(new CustomEvent('secureline_autolock_changed', { detail: nextVal }));
+            return { ...s, active: nextActive, currentValue: nextVal };
+          }
           return { ...s, active: nextActive };
         }
         return s;
@@ -290,6 +317,12 @@ export function SettingsView() {
             const isActive = val !== 'معطل (احتفاظ دائم)';
             localStorage.setItem('secureline_auto_delete_setting', val);
             window.dispatchEvent(new CustomEvent('secureline_autodelete_changed', { detail: val }));
+            return { ...s, currentValue: val, active: isActive };
+          }
+          if (settingId === 'autolock_tab_blur') {
+            const isActive = val !== 'معطل';
+            localStorage.setItem('secureline_autolock_policy', val);
+            window.dispatchEvent(new CustomEvent('secureline_autolock_changed', { detail: val }));
             return { ...s, currentValue: val, active: isActive };
           }
           return { ...s, currentValue: val };
